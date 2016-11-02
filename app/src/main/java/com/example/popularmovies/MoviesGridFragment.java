@@ -215,7 +215,10 @@ public class MoviesGridFragment extends Fragment implements MovieConstants {
                         .appendPath(criteria)
                         .appendQueryParameter("sort_by", "popularity.desc")
                         .appendQueryParameter("api_key", BuildConfig.THE_MOVIE_DB_API_KEY);
-                URL url = new URL(builder.build().toString());
+
+                final String builtURLString = builder.build().toString();
+                Log.i(TAG, String.format("builtURLString: %s", builtURLString));
+                URL url = new URL(builtURLString);
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
