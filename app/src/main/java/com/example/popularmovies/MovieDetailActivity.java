@@ -2,7 +2,7 @@ package com.example.popularmovies;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -11,7 +11,7 @@ import android.view.MenuItem;
  * <p/>
  * Created by Asim Qureshi.
  */
-public class MovieDetailActivity extends AppCompatActivity {
+public class MovieDetailActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
