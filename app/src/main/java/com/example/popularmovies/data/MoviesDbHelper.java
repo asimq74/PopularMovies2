@@ -41,46 +41,53 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
         // Create a table to hold videos
         final String SQL_CREATE_VIDEOS_TABLE = "CREATE TABLE " + VideosEntry.TABLE_NAME + " (" +
                 VideosEntry._ID + " TEXT PRIMARY KEY," +
-                VideosEntry.COLUMN_MOVIE_ID + " TEXT UNIQUE NOT NULL, " +
+                VideosEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
                 VideosEntry.COLUMN_NAME + " TEXT NOT NULL, " +
                 VideosEntry.COLUMN_SITE + " TEXT NOT NULL, " +
                 VideosEntry.COLUMN_SIZE + " INTEGER NOT NULL, " +
                 VideosEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
+                VideosEntry.COLUMN_KEY + " TEXT NOT NULL, " +
+                // Set up the location column as a foreign key to location table.
+                " FOREIGN KEY (" + VideosEntry.COLUMN_MOVIE_ID + ") REFERENCES " +
+                MoviesEntry.TABLE_NAME + " (" + MoviesEntry._ID + ");";
+
+        // Create a table to hold videos
+        final String SQL_CREATE_REVIEWS_TABLE = "CREATE TABLE " + ReviewsEntry.TABLE_NAME + " (" +
+                ReviewsEntry._ID + " TEXT PRIMARY KEY," +
+                ReviewsEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
+                ReviewsEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
+                ReviewsEntry.COLUMN_CONTENT + " TEXT NOT NULL, " +
+                ReviewsEntry.COLUMN_URL + " TEXT NOT NULL, " +
+                // Set up the location column as a foreign key to location table.
+                " FOREIGN KEY (" + ReviewsEntry.COLUMN_MOVIE_ID + ") REFERENCES " +
+                MoviesEntry.TABLE_NAME + " (" + MoviesEntry._ID + ");";
+
+		final String SQL_CREATE_MOVIES_TABLE = "CREATE TABLE " + MoviesEntry.TABLE_NAME + " (" +
+				// Why AutoIncrement here, and not above?
+				// Unique keys will be auto-generated in either case.  But for weather
+				// forecasting, it's reasonable to assume the user will want information
+				// for a certain date and all dates *following*, so the forecast data
+				// should be sorted accordingly.
+				MoviesEntry._ID + " INTEGER PRIMARY KEY," +
+
+				// the ID of the location entry associated with this weather data
+				MoviesEntry.COLUMN_ADULT + " TEXT NOT NULL, " +
+				MoviesEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
+				MoviesEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, " +
+				MoviesEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL," +
+				MoviesEntry.COLUMN_ORIGINAL_TITLE  + " TEXT NOT NULL," +
+                MoviesEntry.COLUMN_ORIGINAL_LANGUAGE  + " TEXT NOT NULL," +
+                MoviesEntry.COLUMN_TITLE  + " TEXT NOT NULL," +
+                MoviesEntry.COLUMN_BACKDROP_PATH  + " TEXT NOT NULL," +
+                MoviesEntry.COLUMN_POPULARITY  + " TEXT NOT NULL," +
+                MoviesEntry.COLUMN_VOTE_COUNT  + " TEXT NOT NULL," +
+                MoviesEntry.COLUMN_VOTE_AVERAGE  + " TEXT NOT NULL," +
+                MoviesEntry.COLUMN_VIDEO  + " TEXT NOT NULL" +
                 " );";
 
-//		final String SQL_CREATE_MOVIES_TABLE = "CREATE TABLE " + MoviesEntry.TABLE_NAME + " (" +
-//				// Why AutoIncrement here, and not above?
-//				// Unique keys will be auto-generated in either case.  But for weather
-//				// forecasting, it's reasonable to assume the user will want information
-//				// for a certain date and all dates *following*, so the forecast data
-//				// should be sorted accordingly.
-//				MoviesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-//
-//				// the ID of the location entry associated with this weather data
-//				MoviesEntry.COLUMN_LOC_KEY + " INTEGER NOT NULL, " +
-//				MoviesEntry.COLUMN_DATE + " INTEGER NOT NULL, " +
-//				MoviesEntry.COLUMN_SHORT_DESC + " TEXT NOT NULL, " +
-//				MoviesEntry.COLUMN_WEATHER_ID + " INTEGER NOT NULL," +
-//
-//				MoviesEntry.COLUMN_MIN_TEMP + " REAL NOT NULL, " +
-//				MoviesEntry.COLUMN_MAX_TEMP + " REAL NOT NULL, " +
-//
-//				MoviesEntry.COLUMN_HUMIDITY + " REAL NOT NULL, " +
-//				MoviesEntry.COLUMN_PRESSURE + " REAL NOT NULL, " +
-//				MoviesEntry.COLUMN_WIND_SPEED + " REAL NOT NULL, " +
-//				MoviesEntry.COLUMN_DEGREES + " REAL NOT NULL, " +
-//
-//				// Set up the location column as a foreign key to location table.
-//				" FOREIGN KEY (" + MoviesEntry.COLUMN_LOC_KEY + ") REFERENCES " +
-//				VideosEntry.TABLE_NAME + " (" + VideosEntry._ID + "), " +
-//
-//				// To assure the application have just one weather entry per day
-//				// per location, it's created a UNIQUE constraint with REPLACE strategy
-//				" UNIQUE (" + MoviesEntry.COLUMN_DATE + ", " +
-//				MoviesEntry.COLUMN_LOC_KEY + ") ON CONFLICT REPLACE);";
-
+		sqLiteDatabase.execSQL(SQL_CREATE_MOVIES_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_VIDEOS_TABLE);
-//		sqLiteDatabase.execSQL(SQL_CREATE_MOVIES_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_REVIEWS_TABLE);
     }
 
     @Override
