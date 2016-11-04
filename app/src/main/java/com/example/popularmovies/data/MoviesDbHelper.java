@@ -26,30 +26,27 @@ import com.example.popularmovies.data.MoviesContract.VideosEntry;
 /**
  * Manages a local database for weather data.
  */
-public class MoviesDbHelper
+public class MoviesDbHelper extends SQLiteOpenHelper {
 
-		extends SQLiteOpenHelper {
+    static final String DATABASE_NAME = "movies.db";
+    // If you change the database schema, you must increment the database version.
+    private static final int DATABASE_VERSION = 2;
 
-	static final String DATABASE_NAME = "movies.db";
-	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 2;
+    public MoviesDbHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
 
-	public MoviesDbHelper(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
-	}
-
-	@Override
-	public void onCreate(SQLiteDatabase sqLiteDatabase) {
-		// Create a table to hold locations.  A location consists of the string supplied in the
-		// location setting, the city name, and the latitude and longitude
-		final String SQL_CREATE_VIDEOS_TABLE = "CREATE TABLE " + VideosEntry.TABLE_NAME + " (" +
-				VideosEntry._ID + " TEXT PRIMARY KEY," +
-				VideosEntry.COLUMN_MOVIE_ID + " TEXT UNIQUE NOT NULL, " +
-				VideosEntry.COLUMN_NAME + " TEXT NOT NULL, " +
-				VideosEntry.COLUMN_SITE + " TEXT NOT NULL, " +
-				VideosEntry.COLUMN_SIZE + " INTEGER NOT NULL, " +
-				VideosEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
-				" );";
+    @Override
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        // Create a table to hold videos
+        final String SQL_CREATE_VIDEOS_TABLE = "CREATE TABLE " + VideosEntry.TABLE_NAME + " (" +
+                VideosEntry._ID + " TEXT PRIMARY KEY," +
+                VideosEntry.COLUMN_MOVIE_ID + " TEXT UNIQUE NOT NULL, " +
+                VideosEntry.COLUMN_NAME + " TEXT NOT NULL, " +
+                VideosEntry.COLUMN_SITE + " TEXT NOT NULL, " +
+                VideosEntry.COLUMN_SIZE + " INTEGER NOT NULL, " +
+                VideosEntry.COLUMN_TYPE + " TEXT NOT NULL, " +
+                " );";
 
 //		final String SQL_CREATE_MOVIES_TABLE = "CREATE TABLE " + MoviesEntry.TABLE_NAME + " (" +
 //				// Why AutoIncrement here, and not above?
@@ -82,21 +79,21 @@ public class MoviesDbHelper
 //				" UNIQUE (" + MoviesEntry.COLUMN_DATE + ", " +
 //				MoviesEntry.COLUMN_LOC_KEY + ") ON CONFLICT REPLACE);";
 
-		sqLiteDatabase.execSQL(SQL_CREATE_VIDEOS_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_VIDEOS_TABLE);
 //		sqLiteDatabase.execSQL(SQL_CREATE_MOVIES_TABLE);
-	}
+    }
 
-	@Override
-	public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-		// This database is only a cache for online data, so its upgrade policy is
-		// to simply to discard the data and start over
-		// Note that this only fires if you change the version number for your database.
-		// It does NOT depend on the version number for your application.
-		// If you want to update the schema without wiping data, commenting out the next 2 lines
-		// should be your top priority before modifying this method.
-		sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + VideosEntry.TABLE_NAME);
-		sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MoviesEntry.TABLE_NAME);
-		sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ReviewsEntry.TABLE_NAME);
-		onCreate(sqLiteDatabase);
-	}
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        // This database is only a cache for online data, so its upgrade policy is
+        // to simply to discard the data and start over
+        // Note that this only fires if you change the version number for your database.
+        // It does NOT depend on the version number for your application.
+        // If you want to update the schema without wiping data, commenting out the next 2 lines
+        // should be your top priority before modifying this method.
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + VideosEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MoviesEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ReviewsEntry.TABLE_NAME);
+        onCreate(sqLiteDatabase);
+    }
 }

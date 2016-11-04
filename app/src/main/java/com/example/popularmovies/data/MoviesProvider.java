@@ -12,104 +12,104 @@ import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
 
 /**
- * Created by U1C306 on 11/3/2016.
+ * Content Provider for movies
+ * <p>
+ * Created by Asim Qureshi
  */
 
 public class MoviesProvider extends ContentProvider {
 
-	// The URI Matcher used by this content provider.
-	private static final UriMatcher sUriMatcher = buildUriMatcher();
-	private MoviesDbHelper mOpenHelper;
+    static final int MOVIES = 100;
+    static final int MOVIE_BY_ID = 101;
+    static final int MOVIE_WITH_REVIEW = 102;
+    static final int MOVIE_WITH_VIDEO = 300;
+    // The URI Matcher used by this content provider.
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
+    private static final SQLiteQueryBuilder movieTrailersByMovieIdQueryBuilder;
+    private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;
 
-	static final int MOVIES = 100;
-	static final int MOVIE_BY_ID = 101;
-	static final int MOVIE_WITH_REVIEW = 102;
-	static final int MOVIE_WITH_VIDEO = 300;
+    static {
+        movieTrailersByMovieIdQueryBuilder = new SQLiteQueryBuilder();
+        movieReviewsByMovieIdQueryBuilder = new SQLiteQueryBuilder();
 
-	private static final SQLiteQueryBuilder movieTrailersByMovieIdQueryBuilder;
-	private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;
+        //This is an inner join which looks like
+        //weather INNER JOIN location ON weather.location_id = location._id
+        movieTrailersByMovieIdQueryBuilder.setTables(
+                MoviesContract.MoviesEntry.TABLE_NAME + " INNER JOIN " +
+                        MoviesContract.VideosEntry.TABLE_NAME +
+                        " ON " + MoviesContract.MoviesEntry.TABLE_NAME +
+                        "." + MoviesEntry.COLUMN_ID +
+                        " = " + MoviesContract.VideosEntry.TABLE_NAME +
+                        "." + VideosEntry.COLUMN_MOVIE_ID);
 
+        //This is an inner join which looks like
+        //weather INNER JOIN location ON weather.location_id = location._id
+        movieReviewsByMovieIdQueryBuilder.setTables(
+                MoviesContract.MoviesEntry.TABLE_NAME + " INNER JOIN " +
+                        MoviesContract.ReviewsEntry.TABLE_NAME +
+                        " ON " + MoviesContract.MoviesEntry.TABLE_NAME +
+                        "." + MoviesEntry.COLUMN_ID +
+                        " = " + MoviesContract.ReviewsEntry.TABLE_NAME +
+                        "." + MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID);
+    }
 
-	/*
+    private MoviesDbHelper mOpenHelper;
+
+    /*
         Students: Here is where you need to create the UriMatcher. This UriMatcher will
         match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE,
         and LOCATION integer constants defined above.  You can test this by uncommenting the
         testUriMatcher test within TestUriMatcher.
      */
-	static UriMatcher buildUriMatcher() {
-		// I know what you're thinking.  Why create a UriMatcher when you can use regular
-		// expressions instead?  Because you're not crazy, that's why.
+    static UriMatcher buildUriMatcher() {
+        // I know what you're thinking.  Why create a UriMatcher when you can use regular
+        // expressions instead?  Because you're not crazy, that's why.
 
-		// All paths added to the UriMatcher have a corresponding code to return when a match is
-		// found.  The code passed into the constructor represents the code to return for the root
-		// URI.  It's common to use NO_MATCH as the code for this case.
-		final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-		final String authority = MoviesContract.CONTENT_AUTHORITY;
+        // All paths added to the UriMatcher have a corresponding code to return when a match is
+        // found.  The code passed into the constructor represents the code to return for the root
+        // URI.  It's common to use NO_MATCH as the code for this case.
+        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        final String authority = MoviesContract.CONTENT_AUTHORITY;
 
-		// For each type of URI you want to add, create a corresponding code.
-		matcher.addURI(authority, MoviesContract.PATH_MOVIES, MOVIES);
-		matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*", MOVIE_BY_ID);
-		matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*/" + MoviesContract.PATH_REVIEWS, MOVIE_WITH_REVIEW);
-		matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*/" + MoviesContract.PATH_VIDEOS, MOVIE_WITH_VIDEO);
+        // For each type of URI you want to add, create a corresponding code.
+        matcher.addURI(authority, MoviesContract.PATH_MOVIES, MOVIES);
+        matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*", MOVIE_BY_ID);
+        matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*/" + MoviesContract.PATH_REVIEWS, MOVIE_WITH_REVIEW);
+        matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*/" + MoviesContract.PATH_VIDEOS, MOVIE_WITH_VIDEO);
 
-		return matcher;
-	}
+        return matcher;
+    }
 
-	static{
-		movieTrailersByMovieIdQueryBuilder = new SQLiteQueryBuilder();
-		movieReviewsByMovieIdQueryBuilder = new SQLiteQueryBuilder();
+    @Override
+    public boolean onCreate() {
+        return false;
+    }
 
-		//This is an inner join which looks like
-		//weather INNER JOIN location ON weather.location_id = location._id
-		movieTrailersByMovieIdQueryBuilder.setTables(
-				MoviesContract.MoviesEntry.TABLE_NAME + " INNER JOIN " +
-						MoviesContract.VideosEntry.TABLE_NAME +
-						" ON " + MoviesContract.MoviesEntry.TABLE_NAME +
-						"." + MoviesEntry.COLUMN_ID +
-						" = " + MoviesContract.VideosEntry.TABLE_NAME +
-						"." + VideosEntry.COLUMN_MOVIE_ID);
+    @Nullable
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        return null;
+    }
 
-		//This is an inner join which looks like
-		//weather INNER JOIN location ON weather.location_id = location._id
-		movieReviewsByMovieIdQueryBuilder.setTables(
-				MoviesContract.MoviesEntry.TABLE_NAME + " INNER JOIN " +
-						MoviesContract.ReviewsEntry.TABLE_NAME +
-						" ON " + MoviesContract.MoviesEntry.TABLE_NAME +
-						"." + MoviesEntry.COLUMN_ID +
-						" = " + MoviesContract.ReviewsEntry.TABLE_NAME +
-						"." + MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID);
-	}
-	
-	@Override
-	public boolean onCreate() {
-		return false;
-	}
+    @Nullable
+    @Override
+    public String getType(Uri uri) {
+        return null;
+    }
 
-	@Nullable
-	@Override
-	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-		return null;
-	}
+    @Nullable
+    @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        return null;
+    }
 
-	@Nullable
-	@Override
-	public String getType(Uri uri) {
-		return null;
-	}
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        return 0;
+    }
 
-	@Nullable
-	@Override
-	public Uri insert(Uri uri, ContentValues values) {
-		return null;
-	}
-
-	@Override
-	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		return 0;
-	}
-
-	@Override
-	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		return 0;
-	}
+    @Override
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        return 0;
+    }
 }
