@@ -21,8 +21,8 @@ public class MoviesProvider extends ContentProvider {
 
     static final int MOVIES = 100;
     static final int MOVIE_BY_ID = 101;
-    static final int MOVIE_WITH_REVIEW = 102;
-    static final int MOVIE_WITH_VIDEO = 300;
+    static final int MOVIE_REVIEWS = 102;
+    static final int MOVIE_TRAILERS = 300;
     // The URI Matcher used by this content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final SQLiteQueryBuilder movieTrailersByMovieIdQueryBuilder;
@@ -74,8 +74,8 @@ public class MoviesProvider extends ContentProvider {
         // For each type of URI you want to add, create a corresponding code.
         matcher.addURI(authority, MoviesContract.PATH_MOVIES, MOVIES);
         matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*", MOVIE_BY_ID);
-        matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*/" + MoviesContract.PATH_REVIEWS, MOVIE_WITH_REVIEW);
-        matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*/" + MoviesContract.PATH_VIDEOS, MOVIE_WITH_VIDEO);
+        matcher.addURI(authority, MoviesContract.PATH_REVIEWS + "/*", MOVIE_REVIEWS);
+        matcher.addURI(authority, MoviesContract.PATH_VIDEOS + "/*", MOVIE_TRAILERS);
 
         return matcher;
     }

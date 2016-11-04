@@ -50,17 +50,9 @@ public class MoviesContract {
 				BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES).build();
 		public static final String TABLE_NAME = "movies";
 
-//		public static Uri buildWeatherLocationWithDate(String locationSetting, long date) {
-//			return CONTENT_URI.buildUpon().appendPath(locationSetting)
-//					.appendPath(Long.toString(normalizeDate(date))).build();
-//		}
-//
-//		public static Uri buildWeatherLocationWithStartDate(
-//				String locationSetting, long startDate) {
-//			long normalizedDate = normalizeDate(startDate);
-//			return CONTENT_URI.buildUpon().appendPath(locationSetting)
-//					.appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
-//		}
+		public static Uri buildMovieById(int movieId) {
+			return ContentUris.withAppendedId(CONTENT_URI, movieId);
+		}
 
 	}
 
@@ -81,7 +73,7 @@ public class MoviesContract {
 		// Table name
 		public static final String TABLE_NAME = "reviews";
 
-		public static Uri buildReviewsUri(long movieId) {
+		public static Uri buildReviewsUri(int movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 	}
@@ -105,7 +97,7 @@ public class MoviesContract {
 		// Table name
 		public static final String TABLE_NAME = "videos";
 
-		public static Uri buildVideosUri(long movieId) {
+		public static Uri buildVideosUri(int movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 	}
