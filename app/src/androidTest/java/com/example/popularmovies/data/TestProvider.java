@@ -1,7 +1,6 @@
 package com.example.popularmovies.data;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
@@ -15,14 +14,6 @@ import com.example.popularmovies.data.MoviesContract.VideosEntry;
  */
 
 public class TestProvider extends AndroidTestCase {
-
-	// Since we want each test to start with a clean slate, run deleteAllRecords
-	// in setUp (called by the test runner before each test).
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		deleteAllRecords();
-	}
 
 	/*
 		Student: Refactor this function to use the deleteAllRecordsFromProvider functionality once
@@ -89,6 +80,14 @@ public class TestProvider extends AndroidTestCase {
 		cursor.close();
 	}
 
+	// Since we want each test to start with a clean slate, run deleteAllRecords
+	// in setUp (called by the test runner before each test).
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		deleteAllRecords();
+	}
+
 	/*
 		This test uses the database directly to insert and then uses the ContentProvider to
 		read out the data.  Uncomment this test to see if the basic weather query functionality
@@ -100,7 +99,6 @@ public class TestProvider extends AndroidTestCase {
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 
 		ContentValues testValues = TestUtilities.createMoviesTestValues();
-		long reviewRowId = TestUtilities.insertReviewValues(mContext);
 
 		long movieRowId = db.insert(MoviesEntry.TABLE_NAME, null, testValues);
 		assertTrue("Unable to Insert MovieEntry into the Database", movieRowId != -1);
@@ -118,5 +116,30 @@ public class TestProvider extends AndroidTestCase {
 
 		// Make sure we get the correct cursor out of the database
 		TestUtilities.validateCursor("testBasicMovieQuery", moviesCursor, testValues);
+	}
+
+	public void testBasicTrailersQuery() {
+		// insert our test records into the database
+		MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+		ContentValues testValues = TestUtilities.createVideoTestValues();
+
+		long trailerRowId = db.insert(VideosEntry.TABLE_NAME, null, testValues);
+		assertTrue("Unable to Insert VideosEntry into the Database", trailerRowId != -1);
+
+		db.close();
+
+		// Test the basic content provider query
+		Cursor trailersCursor = mContext.getContentResolver().query(
+				VideosEntry.CONTENT_URI,
+				null,
+				null,
+				null,
+				null
+		);
+
+		// Make sure we get the correct cursor out of the database
+		TestUtilities.validateCursor("testBasicTrailersQuery", trailersCursor, testValues);
 	}
 }

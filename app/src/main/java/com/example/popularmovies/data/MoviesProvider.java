@@ -85,7 +85,7 @@ public class MoviesProvider extends ContentProvider {
     }
 
     private Cursor getVideos() {
-        return moviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+        return trailersQueryBuilder.query(mOpenHelper.getReadableDatabase(),
             null,
             null,
             null,
@@ -97,7 +97,7 @@ public class MoviesProvider extends ContentProvider {
 
 
     private Cursor getReviews() {
-        return moviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+        return reviewsQueryBuilder.query(mOpenHelper.getReadableDatabase(),
             null,
             null,
             null,
