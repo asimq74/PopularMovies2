@@ -5,7 +5,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
@@ -22,6 +24,31 @@ public class TestUtilities extends AndroidTestCase {
 	public static final int TEST_ID = 284052;
 	final static String LOG_TAG = TestUtilities.class.getSimpleName();
 
+
+	/*
+        Students: You can uncomment this function once you have finished creating the
+        LocationEntry part of the WeatherContract as well as the WeatherDbHelper.
+     */
+	static long insertReviewValues(Context context) {
+		// insert our test records into the database
+		MoviesDbHelper dbHelper = new MoviesDbHelper(context);
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		ContentValues testValues = TestUtilities.createReviewTestValues();
+
+		long reviewsRowId;
+		reviewsRowId = db.insert(MoviesContract.ReviewsEntry.TABLE_NAME, null, testValues);
+
+		// Verify we got a row back.
+		assertTrue("Error: Failure to insert Reviews Values", reviewsRowId != -1);
+
+		return reviewsRowId;
+	}
+
+	static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues) {
+		assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
+		validateCurrentRecord(error, valueCursor, expectedValues);
+		valueCursor.close();
+	}
 
 	static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues) {
 		Set<Entry<String, Object>> valueSet = expectedValues.valueSet();

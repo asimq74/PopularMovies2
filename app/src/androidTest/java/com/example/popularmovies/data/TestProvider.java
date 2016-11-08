@@ -1,6 +1,7 @@
 package com.example.popularmovies.data;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
@@ -99,26 +100,23 @@ public class TestProvider extends AndroidTestCase {
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 
 		ContentValues testValues = TestUtilities.createMoviesTestValues();
-//		long locationRowId = TestUtilities.insertNorthPoleLocationValues(mContext);
-//
-//		// Fantastic.  Now that we have a location, add some weather!
-//		ContentValues weatherValues = TestUtilities.createWeatherValues(locationRowId);
-//
-//		long weatherRowId = db.insert(WeatherEntry.TABLE_NAME, null, weatherValues);
-//		assertTrue("Unable to Insert WeatherEntry into the Database", weatherRowId != -1);
-//
-//		db.close();
-//
-//		// Test the basic content provider query
-//		Cursor weatherCursor = mContext.getContentResolver().query(
-//				WeatherEntry.CONTENT_URI,
-//				null,
-//				null,
-//				null,
-//				null
-//		);
-//
-//		// Make sure we get the correct cursor out of the database
-//		TestUtilities.validateCursor("testBasicWeatherQuery", weatherCursor, weatherValues);
+		long reviewRowId = TestUtilities.insertReviewValues(mContext);
+
+		long movieRowId = db.insert(MoviesEntry.TABLE_NAME, null, testValues);
+		assertTrue("Unable to Insert MovieEntry into the Database", movieRowId != -1);
+
+		db.close();
+
+		// Test the basic content provider query
+		Cursor moviesCursor = mContext.getContentResolver().query(
+				MoviesEntry.CONTENT_URI,
+				null,
+				null,
+				null,
+				null
+		);
+
+		// Make sure we get the correct cursor out of the database
+		TestUtilities.validateCursor("testBasicMovieQuery", moviesCursor, testValues);
 	}
 }

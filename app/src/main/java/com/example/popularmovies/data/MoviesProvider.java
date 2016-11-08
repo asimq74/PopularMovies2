@@ -4,11 +4,13 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
+import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
 
 /**
@@ -23,14 +25,29 @@ public class MoviesProvider extends ContentProvider {
     static final int MOVIE_BY_ID = 101;
     static final int MOVIE_REVIEWS = 102;
     static final int MOVIE_TRAILERS = 300;
+    static final int REVIEWS = 301;
+    static final int TRAILERS = 302;
     // The URI Matcher used by this content provider.
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private static final SQLiteQueryBuilder movieTrailersByMovieIdQueryBuilder;
     private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;
+    private static final SQLiteQueryBuilder moviesQueryBuilder;
+    private static final SQLiteQueryBuilder reviewsQueryBuilder;
+    private static final SQLiteQueryBuilder trailersQueryBuilder;
 
     static {
         movieTrailersByMovieIdQueryBuilder = new SQLiteQueryBuilder();
         movieReviewsByMovieIdQueryBuilder = new SQLiteQueryBuilder();
+        moviesQueryBuilder = new SQLiteQueryBuilder();
+        reviewsQueryBuilder = new SQLiteQueryBuilder();
+        trailersQueryBuilder = new SQLiteQueryBuilder();
+
+        moviesQueryBuilder.setTables(
+            MoviesContract.MoviesEntry.TABLE_NAME);
+
+        trailersQueryBuilder.setTables(VideosEntry.TABLE_NAME);
+
+        reviewsQueryBuilder.setTables(ReviewsEntry.TABLE_NAME);
 
         //This is an inner join which looks like
         //weather INNER JOIN location ON weather.location_id = location._id
@@ -55,6 +72,41 @@ public class MoviesProvider extends ContentProvider {
 
     private MoviesDbHelper mOpenHelper;
 
+
+    private Cursor getMovies() {
+        return moviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+    }
+
+    private Cursor getVideos() {
+        return moviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+    }
+
+
+    private Cursor getReviews() {
+        return moviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
+    }
+
     /*
         Students: Here is where you need to create the UriMatcher. This UriMatcher will
         match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE,
@@ -76,25 +128,64 @@ public class MoviesProvider extends ContentProvider {
         matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*", MOVIE_BY_ID);
         matcher.addURI(authority, MoviesContract.PATH_REVIEWS + "/*", MOVIE_REVIEWS);
         matcher.addURI(authority, MoviesContract.PATH_VIDEOS + "/*", MOVIE_TRAILERS);
-
+        matcher.addURI(authority, MoviesContract.PATH_REVIEWS, REVIEWS);
+        matcher.addURI(authority, MoviesContract.PATH_VIDEOS, TRAILERS);
         return matcher;
     }
 
     @Override
     public boolean onCreate() {
-        return false;
+        mOpenHelper = new MoviesDbHelper(getContext());
+        return true;
     }
 
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        return null;
+        Cursor retCursor;
+        switch (sUriMatcher.match(uri)) {
+            case MOVIES: {
+                retCursor = getMovies();
+                break;
+            }
+            case REVIEWS: {
+                retCursor = getReviews();
+                break;
+            }
+            case TRAILERS: {
+                retCursor = getVideos();
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return retCursor;
     }
 
     @Nullable
     @Override
     public String getType(Uri uri) {
-        return null;
+        // Use the Uri Matcher to determine what kind of URI this is.
+        final int match = sUriMatcher.match(uri);
+
+        switch (match) {
+            // Student: Uncomment and fill out these two cases
+            case MOVIES:
+                return MoviesEntry.CONTENT_TYPE;
+            case MOVIE_BY_ID:
+                return MoviesEntry.CONTENT_ITEM_TYPE;
+            case MOVIE_REVIEWS:
+                return ReviewsEntry.CONTENT_TYPE;
+            case MOVIE_TRAILERS:
+                return VideosEntry.CONTENT_TYPE;
+            case REVIEWS:
+                return ReviewsEntry.CONTENT_TYPE;
+            case TRAILERS:
+                return VideosEntry.CONTENT_TYPE;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
     }
 
     @Nullable
@@ -105,7 +196,32 @@ public class MoviesProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsDeleted;
+        // this makes delete all rows return the number of rows deleted
+        if ( null == selection ) selection = "1";
+        switch (match) {
+            case MOVIES:
+                rowsDeleted = db.delete(
+                    MoviesEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case TRAILERS:
+                rowsDeleted = db.delete(
+                    VideosEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case REVIEWS:
+                rowsDeleted = db.delete(
+                    ReviewsEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        // Because a null deletes all rows
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
     @Override
