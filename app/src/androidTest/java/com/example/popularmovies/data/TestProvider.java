@@ -3,6 +3,7 @@ package com.example.popularmovies.data;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.test.AndroidTestCase;
 
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
@@ -96,20 +97,22 @@ public class TestProvider extends AndroidTestCase {
 		given in the ContentProvider is working correctly.
  */
 	public void testBasicMovieQuery() {
+		testBasicQuery(MoviesEntry.TABLE_NAME, MoviesEntry.CONTENT_URI, TestUtilities.createMoviesTestValues());
+	}
+
+	public void testBasicQuery(String tableName, Uri contentUri, ContentValues testValues) {
 		// insert our test records into the database
 		MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
 
-		ContentValues testValues = TestUtilities.createMoviesTestValues();
-
-		long movieRowId = db.insert(MoviesEntry.TABLE_NAME, null, testValues);
-		assertTrue("Unable to Insert MovieEntry into the Database", movieRowId != -1);
+		long rowId = db.insert(tableName, null, testValues);
+		assertTrue(String.format("Unable to Insert %s into the Database", tableName), rowId != -1);
 
 		db.close();
 
 		// Test the basic content provider query
-		Cursor moviesCursor = mContext.getContentResolver().query(
-				MoviesEntry.CONTENT_URI,
+		Cursor cursor = mContext.getContentResolver().query(
+				contentUri,
 				null,
 				null,
 				null,
@@ -117,31 +120,14 @@ public class TestProvider extends AndroidTestCase {
 		);
 
 		// Make sure we get the correct cursor out of the database
-		TestUtilities.validateCursor("testBasicMovieQuery", moviesCursor, testValues);
+		TestUtilities.validateCursor(String.format("testBasicQuery for %s", tableName), cursor, testValues);
+	}
+
+	public void testBasicReviewsQuery() {
+		testBasicQuery(ReviewsEntry.TABLE_NAME, ReviewsEntry.CONTENT_URI, TestUtilities.createReviewTestValues());
 	}
 
 	public void testBasicTrailersQuery() {
-		// insert our test records into the database
-		MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
-		SQLiteDatabase db = dbHelper.getWritableDatabase();
-
-		ContentValues testValues = TestUtilities.createVideoTestValues();
-
-		long trailerRowId = db.insert(VideosEntry.TABLE_NAME, null, testValues);
-		assertTrue("Unable to Insert VideosEntry into the Database", trailerRowId != -1);
-
-		db.close();
-
-		// Test the basic content provider query
-		Cursor trailersCursor = mContext.getContentResolver().query(
-				VideosEntry.CONTENT_URI,
-				null,
-				null,
-				null,
-				null
-		);
-
-		// Make sure we get the correct cursor out of the database
-		TestUtilities.validateCursor("testBasicTrailersQuery", trailersCursor, testValues);
+		testBasicQuery(VideosEntry.TABLE_NAME, VideosEntry.CONTENT_URI, TestUtilities.createVideoTestValues());
 	}
 }
