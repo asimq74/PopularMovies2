@@ -79,10 +79,10 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 				MoviesEntry.COLUMN_ORIGINAL_LANGUAGE + " TEXT NOT NULL," +
 				MoviesEntry.COLUMN_TITLE + " TEXT NOT NULL," +
 				MoviesEntry.COLUMN_BACKDROP_PATH + " TEXT NOT NULL," +
-				MoviesEntry.COLUMN_POPULARITY + " REAL NOT NULL," +
-				MoviesEntry.COLUMN_VOTE_COUNT + " TEXT NOT NULL," +
-				MoviesEntry.COLUMN_VOTE_AVERAGE + " TEXT NOT NULL," +
-				MoviesEntry.COLUMN_VIDEO + " TEXT NOT NULL" +
+				MoviesEntry.COLUMN_POPULARITY + " INTEGER NOT NULL," +
+				MoviesEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL," +
+				MoviesEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL," +
+				MoviesEntry.COLUMN_VIDEO + " BOOLEAN NOT NULL" +
 				" );";
 
 		sqLiteDatabase.execSQL(SQL_CREATE_MOVIES_TABLE);

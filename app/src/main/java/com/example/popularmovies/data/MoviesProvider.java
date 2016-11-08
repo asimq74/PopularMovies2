@@ -38,7 +38,7 @@ public class MoviesProvider extends ContentProvider {
                 MoviesContract.MoviesEntry.TABLE_NAME + " INNER JOIN " +
                         MoviesContract.VideosEntry.TABLE_NAME +
                         " ON " + MoviesContract.MoviesEntry.TABLE_NAME +
-                        "." + MoviesEntry.COLUMN_ID +
+                        "." + MoviesEntry._ID +
                         " = " + MoviesContract.VideosEntry.TABLE_NAME +
                         "." + VideosEntry.COLUMN_MOVIE_ID);
 
@@ -48,7 +48,7 @@ public class MoviesProvider extends ContentProvider {
                 MoviesContract.MoviesEntry.TABLE_NAME + " INNER JOIN " +
                         MoviesContract.ReviewsEntry.TABLE_NAME +
                         " ON " + MoviesContract.MoviesEntry.TABLE_NAME +
-                        "." + MoviesEntry.COLUMN_ID +
+                        "." + MoviesEntry._ID +
                         " = " + MoviesContract.ReviewsEntry.TABLE_NAME +
                         "." + MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID);
     }

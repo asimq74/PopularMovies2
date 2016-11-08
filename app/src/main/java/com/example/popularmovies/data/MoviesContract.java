@@ -30,7 +30,6 @@ public class MoviesContract {
 
 		public static final String COLUMN_ADULT = "adult";
 		public static final String COLUMN_BACKDROP_PATH = "backdrop_path";
-		public static final String COLUMN_ID = "id";
 		public static final String COLUMN_ORIGINAL_LANGUAGE = "original_language";
 		public static final String COLUMN_ORIGINAL_TITLE = "original_title";
 		public static final String COLUMN_OVERVIEW = "overview";
@@ -73,7 +72,7 @@ public class MoviesContract {
 		// Table name
 		public static final String TABLE_NAME = "reviews";
 
-		public static Uri buildReviewsUri(int movieId) {
+		public static Uri buildReviewsById(int movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 	}
@@ -97,7 +96,7 @@ public class MoviesContract {
 		// Table name
 		public static final String TABLE_NAME = "videos";
 
-		public static Uri buildVideosUri(int movieId) {
+		public static Uri buildVideosById(int movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 	}

@@ -18,8 +18,8 @@ public class TestUriMatcher extends AndroidTestCase {
 	private static final Uri TEST_MOVIES_DIR = MoviesEntry.CONTENT_URI;
 	private static final int TEST_MOVIE_ID = 40101;
 	private static final Uri TEST_MOVIE_BY_ID = MoviesEntry.buildMovieById(TEST_MOVIE_ID);
-	private static final Uri TEST_MOVIE_REVIEWS = ReviewsEntry.buildReviewsUri(TEST_MOVIE_ID);
-	private static final Uri TEST_MOVIE_TRAILERS = VideosEntry.buildVideosUri(TEST_MOVIE_ID);
+	private static final Uri TEST_MOVIE_REVIEWS = ReviewsEntry.buildReviewsById(TEST_MOVIE_ID);
+	private static final Uri TEST_MOVIE_TRAILERS = VideosEntry.buildVideosById(TEST_MOVIE_ID);
 
 	/*
 			Students: This function tests that your UriMatcher returns the correct integer value
