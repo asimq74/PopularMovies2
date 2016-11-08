@@ -10,7 +10,9 @@ import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
 
 /**
- * Created by U1C306 on 11/8/2016.
+ * Test Content Provider for movies
+ * <p>
+ * Created by Asim Qureshi
  */
 
 public class TestProvider extends AndroidTestCase {
