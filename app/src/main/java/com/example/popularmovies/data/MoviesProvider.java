@@ -191,7 +191,39 @@ public class MoviesProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        Uri returnUri;
+        switch (match) {
+            case MOVIES: {
+                long _id = db.insert(MoviesEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = MoviesEntry.buildMovieById(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case TRAILERS: {
+                long _id = db.insert(VideosEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = VideosEntry.buildVideosById(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case REVIEWS: {
+                long _id = db.insert(ReviewsEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = ReviewsEntry.buildReviewsById(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
     }
 
     @Override
@@ -226,6 +258,28 @@ public class MoviesProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return 0;
+        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsUpdated;
+        // this makes delete all rows return the number of rows deleted
+        if ( null == selection ) selection = "1";
+        switch (match) {
+            case MOVIES:
+                rowsUpdated = db.update(MoviesEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            case TRAILERS:
+                rowsUpdated = db.update(VideosEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            case REVIEWS:
+                rowsUpdated = db.update(ReviewsEntry.TABLE_NAME, values, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        // Because a null deletes all rows
+        if (rowsUpdated != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsUpdated;
     }
 }

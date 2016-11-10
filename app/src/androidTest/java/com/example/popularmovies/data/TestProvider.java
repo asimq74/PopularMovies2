@@ -1,10 +1,13 @@
 package com.example.popularmovies.data;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Movie;
 import android.net.Uri;
 import android.test.AndroidTestCase;
+import android.util.Log;
 
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
@@ -130,4 +133,57 @@ public class TestProvider extends AndroidTestCase {
 	public void testBasicTrailersQuery() {
 		testBasicQuery(VideosEntry.TABLE_NAME, VideosEntry.CONTENT_URI, TestUtilities.createVideoTestValues());
 	}
+
+
+	public static final String LOG_TAG = TestProvider.class.getSimpleName();
+
+	/*
+			 This test uses the provider to insert and then update the data. Uncomment this test to
+			 see if your update location is functioning correctly.
+		*/
+	public void testUpdateMovie() {
+		// Create a new map of values, where column names are the keys
+		ContentValues values = TestUtilities.createMoviesTestValues();
+
+		Uri movieUri = mContext.getContentResolver().insert(MoviesEntry.CONTENT_URI, values);
+		long movieRowId = ContentUris.parseId(movieUri);
+
+		// Verify we got a row back.
+		assertTrue(movieRowId != -1);
+		Log.d(LOG_TAG, "New row id: " + movieRowId);
+
+		ContentValues updatedValues = new ContentValues(values);
+		updatedValues.put(MoviesEntry._ID, movieRowId);
+		updatedValues.put(MoviesEntry.COLUMN_TITLE, "Birth of a Nation");
+
+		// Create a cursor with observer to make sure that the content provider is notifying
+		// the observers as expected
+		Cursor movieCursor = mContext.getContentResolver().query(MoviesEntry.CONTENT_URI, null, null, null, null);
+
+		TestUtilities.TestContentObserver tco = TestUtilities.getTestContentObserver();
+		movieCursor.registerContentObserver(tco);
+
+		int count = mContext.getContentResolver().update(
+				MoviesEntry.CONTENT_URI, updatedValues, MoviesEntry._ID + "= ?",
+				new String[] { Long.toString(movieRowId)});
+		assertEquals(count, 1);
+
+		movieCursor.unregisterContentObserver(tco);
+		movieCursor.close();
+
+		// A cursor is your primary interface to the query results.
+		Cursor cursor = mContext.getContentResolver().query(
+				MoviesEntry.CONTENT_URI,
+				null,   // projection
+				MoviesEntry._ID + " = " + movieRowId,
+				null,   // Values for the "where" clause
+				null    // sort order
+		);
+
+		TestUtilities.validateCursor("testUpdateMovie.  Error validating movies entry update.",
+				cursor, updatedValues);
+
+		cursor.close();
+	}
+
 }

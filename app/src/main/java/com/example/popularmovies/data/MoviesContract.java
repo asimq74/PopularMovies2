@@ -49,7 +49,7 @@ public class MoviesContract {
 				BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES).build();
 		public static final String TABLE_NAME = "movies";
 
-		public static Uri buildMovieById(int movieId) {
+		public static Uri buildMovieById(long movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 
@@ -72,7 +72,7 @@ public class MoviesContract {
 		// Table name
 		public static final String TABLE_NAME = "reviews";
 
-		public static Uri buildReviewsById(int movieId) {
+		public static Uri buildReviewsById(long movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 	}
@@ -96,7 +96,7 @@ public class MoviesContract {
 		// Table name
 		public static final String TABLE_NAME = "videos";
 
-		public static Uri buildVideosById(int movieId) {
+		public static Uri buildVideosById(long movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 	}
