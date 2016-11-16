@@ -15,11 +15,6 @@
  */
 package com.example.popularmovies.data;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,6 +24,11 @@ import android.util.Log;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class TestDb extends AndroidTestCase {
 
@@ -152,6 +152,7 @@ public class TestDb extends AndroidTestCase {
 		final HashSet<String> moviesColumnHashSet = new HashSet<>();
 		moviesColumnHashSet.add(MoviesEntry._ID);
 		moviesColumnHashSet.add(MoviesEntry.COLUMN_ADULT);
+		moviesColumnHashSet.add(MoviesEntry.COLUMN_FAVORITE);
 		moviesColumnHashSet.add(MoviesEntry.COLUMN_BACKDROP_PATH);
 		moviesColumnHashSet.add(MoviesEntry.COLUMN_ORIGINAL_LANGUAGE);
 		moviesColumnHashSet.add(MoviesEntry.COLUMN_ORIGINAL_TITLE);

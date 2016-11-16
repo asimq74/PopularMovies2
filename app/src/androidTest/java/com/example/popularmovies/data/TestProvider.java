@@ -4,7 +4,6 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Movie;
 import android.net.Uri;
 import android.test.AndroidTestCase;
 import android.util.Log;
@@ -12,6 +11,8 @@ import android.util.Log;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
+
+import static com.example.popularmovies.data.TestUtilities.BULK_INSERT_RECORDS_TO_INSERT;
 
 /**
  * Test Content Provider for movies
@@ -102,6 +103,75 @@ public class TestProvider extends AndroidTestCase {
 	public void testBasicMovieQuery() {
 		testBasicQuery(MoviesEntry.TABLE_NAME, MoviesEntry.CONTENT_URI, TestUtilities.createMoviesTestValues());
 	}
+
+	// Student: Uncomment this test after you have completed writing the BulkInsert functionality
+	// in your provider.  Note that this test will work with the built-in (default) provider
+	// implementation, which just inserts records one-at-a-time, so really do implement the
+	// BulkInsert ContentProvider function.
+	public void testBulkInsert() {
+		deleteAllRecords();
+		// first, let's create a location value
+		ContentValues testValues = TestUtilities.createMoviesTestValues();
+		Uri moviesUri = mContext.getContentResolver().insert(MoviesEntry.CONTENT_URI, testValues);
+		long moviesRowId = ContentUris.parseId(moviesUri);
+
+		// Verify we got a row back.
+		assertTrue(moviesRowId != -1);
+
+		// Data's inserted.  IN THEORY.  Now pull some out to stare at it and verify it made
+		// the round trip.
+
+		// A cursor is your primary interface to the query results.
+		Cursor cursor = mContext.getContentResolver().query(
+				MoviesEntry.CONTENT_URI,
+				null, // leaving "columns" null just returns all the columns.
+				null, // cols for "where" clause
+				null, // values for "where" clause
+				null  // sort order
+		);
+
+		TestUtilities.validateCursor("testBulkInsert. Error validating MoviesEntry.",
+				cursor, testValues);
+
+		// Now we can bulkInsert some weather.  In fact, we only implement BulkInsert for weather
+		// entries.  With ContentProviders, you really only have to implement the features you
+		// use, after all.
+		ContentValues[] bulkInsertContentValues = TestUtilities.createBulkInsertMoviesTestValues();
+
+		// Register a content observer for our bulk insert.
+		TestUtilities.TestContentObserver moviesObserver = TestUtilities.getTestContentObserver();
+		mContext.getContentResolver().registerContentObserver(MoviesEntry.CONTENT_URI, true, moviesObserver);
+
+		int insertCount = mContext.getContentResolver().bulkInsert(MoviesEntry.CONTENT_URI, bulkInsertContentValues);
+
+		// Students:  If this fails, it means that you most-likely are not calling the
+		// getContext().getContentResolver().notifyChange(uri, null); in your BulkInsert
+		// ContentProvider method.
+		mContext.getContentResolver().unregisterContentObserver(moviesObserver);
+
+		assertEquals(insertCount, BULK_INSERT_RECORDS_TO_INSERT);
+
+		// A cursor is your primary interface to the query results.
+		cursor = mContext.getContentResolver().query(
+				MoviesEntry.CONTENT_URI,
+				null, // leaving "columns" null just returns all the columns.
+				null, // cols for "where" clause
+				null, // values for "where" clause
+				MoviesEntry.COLUMN_TITLE + " ASC"  // sort order == by DATE ASCENDING
+		);
+
+		// we should have as many records in the database as we've inserted
+		assertEquals(cursor.getCount(), TestUtilities.BULK_INSERT_RECORDS_TO_INSERT + 1);
+
+		// and let's make sure they match the ones we created
+		cursor.moveToFirst();
+		for ( int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext() ) {
+			TestUtilities.validateCurrentRecord("testBulkInsert.  Error validating MoviesEntry " + i,
+					cursor, bulkInsertContentValues[i]);
+		}
+		cursor.close();
+	}
+
 
 	public void testBasicQuery(String tableName, Uri contentUri, ContentValues testValues) {
 		// insert our test records into the database

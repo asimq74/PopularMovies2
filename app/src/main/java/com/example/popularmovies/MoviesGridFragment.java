@@ -1,5 +1,6 @@
 package com.example.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.popularmovies.businessobjects.MovieConstants;
 import com.example.popularmovies.businessobjects.MovieInfo;
+import com.example.popularmovies.data.MoviesContract;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -34,6 +36,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * A fragment representing a list of Movie Items.
@@ -236,6 +239,37 @@ public class MoviesGridFragment extends Fragment implements MovieConstants {
                 }
                 moviesJsonString = buffer.toString();
                 movieInfos = formatJson(moviesJsonString);
+                Vector<ContentValues> cVVector = new Vector<ContentValues>(movieInfos.size());
+                for (MovieInfo movieInfo : movieInfos) {
+                    ContentValues movieValues = new ContentValues();
+
+                    movieValues.put(MoviesContract.MoviesEntry._ID, movieInfo.getId());
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_ADULT, 0);
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_FAVORITE, 0);
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_BACKDROP_PATH, movieInfo.getBackdropPath());
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_ORIGINAL_LANGUAGE, movieInfo.getOriginalLanguage());
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_ORIGINAL_TITLE, movieInfo.getOriginalTitle());
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_OVERVIEW, movieInfo.getOverview());
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_POPULARITY, movieInfo.getPopularity());
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_POSTER_PATH, movieInfo.getPosterPath());
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE, movieInfo.getReleaseDate());
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_TITLE, movieInfo.getTitle());
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_VIDEO, 0);
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, movieInfo.getVoteAverage());
+                    movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_COUNT, movieInfo.getVoteCount());
+
+                    cVVector.add(movieValues);
+                }
+
+                int inserted = 0;
+                // add to database
+                if ( cVVector.size() > 0 ) {
+                    ContentValues[] cvArray = new ContentValues[cVVector.size()];
+                    cVVector.toArray(cvArray);
+                    inserted = getActivity().getContentResolver().bulkInsert(MoviesContract.MoviesEntry.CONTENT_URI, cvArray);
+                }
+                Log.d(TAG, "FetchMoviesTask Complete. " + inserted + " Inserted");
+
             } catch (JSONException e) {
                 Log.e(TAG, String.format("JSONException Error e: %s", e.getMessage()), e);
 

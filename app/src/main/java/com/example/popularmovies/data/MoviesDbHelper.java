@@ -82,6 +82,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 				MoviesEntry.COLUMN_POPULARITY + " INTEGER NOT NULL," +
 				MoviesEntry.COLUMN_VOTE_COUNT + " INTEGER NOT NULL," +
 				MoviesEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL," +
+				MoviesEntry.COLUMN_FAVORITE + " BOOLEAN NOT NULL, " +
 				MoviesEntry.COLUMN_VIDEO + " BOOLEAN NOT NULL" +
 				" );";
 
