@@ -35,6 +35,11 @@ public class MoviesProvider extends ContentProvider {
     private static final SQLiteQueryBuilder reviewsQueryBuilder;
     private static final SQLiteQueryBuilder trailersQueryBuilder;
 
+    //location.location_setting = ?
+    private static final String moviesEntryIDSelection =
+        MoviesEntry.TABLE_NAME +
+            "." + MoviesEntry._ID + " = ? ";
+
     static {
         movieTrailersByMovieIdQueryBuilder = new SQLiteQueryBuilder();
         movieReviewsByMovieIdQueryBuilder = new SQLiteQueryBuilder();
@@ -48,6 +53,9 @@ public class MoviesProvider extends ContentProvider {
         trailersQueryBuilder.setTables(VideosEntry.TABLE_NAME);
 
         reviewsQueryBuilder.setTables(ReviewsEntry.TABLE_NAME);
+
+
+
 
         //This is an inner join which looks like
         //weather INNER JOIN location ON weather.location_id = location._id

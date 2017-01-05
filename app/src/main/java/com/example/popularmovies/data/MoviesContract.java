@@ -30,6 +30,7 @@ public class MoviesContract {
 
 		public static final String COLUMN_ADULT = "adult";
 		public static final String COLUMN_BACKDROP_PATH = "backdrop_path";
+		public static final String COLUMN_FAVORITE = "favorite";
 		public static final String COLUMN_ORIGINAL_LANGUAGE = "original_language";
 		public static final String COLUMN_ORIGINAL_TITLE = "original_title";
 		public static final String COLUMN_OVERVIEW = "overview";
@@ -40,7 +41,6 @@ public class MoviesContract {
 		public static final String COLUMN_VIDEO = "video";
 		public static final String COLUMN_VOTE_AVERAGE = "vote_average";
 		public static final String COLUMN_VOTE_COUNT = "vote_count";
-        public static final String COLUMN_FAVORITE = "favorite";
 
 		public static final String CONTENT_ITEM_TYPE =
 				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
