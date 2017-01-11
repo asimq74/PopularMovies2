@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.example.popularmovies.businessobjects.MovieConstants;
 import com.example.popularmovies.businessobjects.MovieInfo;
 import com.example.popularmovies.data.MoviesContract;
+import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -260,7 +261,6 @@ public class MoviesGridFragment extends Fragment implements MovieConstants {
 
                     cVVector.add(movieValues);
                 }
-
                 int inserted = 0;
                 // add to database
                 if ( cVVector.size() > 0 ) {
