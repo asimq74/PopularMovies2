@@ -6,4 +6,6 @@
     <string name="title_activity_movie_detail">Movie Detail</string>
     <string name="rating_label">Rating:</string>
     <string name="release_date_label">Release Date:</string>
+    <string name="failed_to_insert_or_replace">Failed to insert or replace row into %s</string>
+    <string name="unknown_uri">Unknown uri: %s</string>
 </resources>

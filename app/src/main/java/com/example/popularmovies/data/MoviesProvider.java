@@ -7,8 +7,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.example.popularmovies.R;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
@@ -99,6 +101,7 @@ public class MoviesProvider extends ContentProvider {
 		matcher.addURI(authority, MoviesContract.PATH_VIDEOS, TRAILERS);
 		return matcher;
 	}
+
 	private MoviesDbHelper mOpenHelper;
 
 	@Override
@@ -129,6 +132,21 @@ public class MoviesProvider extends ContentProvider {
 			getContext().getContentResolver().notifyChange(uri, null);
 		}
 		return rowsDeleted;
+	}
+
+	@NonNull
+	private String formatFailedToInsertMessage(Uri uri) {
+		return formatString(R.string.failed_to_insert_or_replace, uri);
+	}
+
+	@NonNull
+	private String formatString(int id, Object... formatArgs) {
+		return getContext().getResources().getString(id, formatArgs);
+	}
+
+	@NonNull
+	private String formatUnknownUriMessage(Uri uri) {
+		return formatString(R.string.unknown_uri, uri);
 	}
 
 	private Cursor getMovies() {
@@ -197,32 +215,31 @@ public class MoviesProvider extends ContentProvider {
 		Uri returnUri;
 		switch (match) {
 			case MOVIES: {
-//				long _id = db.insert(MoviesEntry.TABLE_NAME, null, values);
 				long _id = db.replace(MoviesEntry.TABLE_NAME, null, values);
 				if (_id > 0)
 					returnUri = MoviesEntry.buildMovieById(_id);
 				else
-					throw new android.database.SQLException("Failed to insert or replace row into " + uri);
+					throw new android.database.SQLException(formatFailedToInsertMessage(uri));
 				break;
 			}
 			case TRAILERS: {
-				long _id = db.insert(VideosEntry.TABLE_NAME, null, values);
+				long _id = db.replace(VideosEntry.TABLE_NAME, null, values);
 				if (_id > 0)
 					returnUri = VideosEntry.buildVideosById(_id);
 				else
-					throw new android.database.SQLException("Failed to insert row into " + uri);
+					throw new android.database.SQLException(formatFailedToInsertMessage(uri));
 				break;
 			}
 			case REVIEWS: {
-				long _id = db.insert(ReviewsEntry.TABLE_NAME, null, values);
+				long _id = db.replace(ReviewsEntry.TABLE_NAME, null, values);
 				if (_id > 0)
 					returnUri = ReviewsEntry.buildReviewsById(_id);
 				else
-					throw new android.database.SQLException("Failed to insert row into " + uri);
+					throw new android.database.SQLException(formatFailedToInsertMessage(uri));
 				break;
 			}
 			default:
-				throw new UnsupportedOperationException("Unknown uri: " + uri);
+				throw new UnsupportedOperationException(formatUnknownUriMessage(uri));
 		}
 		getContext().getContentResolver().notifyChange(uri, null);
 		return returnUri;
