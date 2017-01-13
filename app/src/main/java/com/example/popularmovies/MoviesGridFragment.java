@@ -236,10 +236,10 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 //	}
 
 	// These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
+	static final int COL_MOVIE_ID = 0;
 	static final int COL_ADULT = 1;
 	static final int COL_BACKDROP_PATH = 2;
 	static final int COL_FAVORITE = 3;
-	static final int COL_MOVIE_ID = 0;
 	static final int COL_ORIGINAL_LANGUAGE = 4;
 	static final int COL_ORIGINAL_TITLE = 5;
 	static final int COL_OVERVIEW = 6;
@@ -273,11 +273,11 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 			MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE,
 			MoviesContract.MoviesEntry.COLUMN_VOTE_COUNT
 	};
+	private static final String SELECTED_KEY = "selected_position";
 
 	public static MoviesGridFragment newInstance() {
 		return new MoviesGridFragment();
 	}
-
 	private GridView gridView;
 	private int mPosition = GridView.INVALID_POSITION;
 	/**
@@ -339,14 +339,39 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 				if (cursor != null) {
 					Intent movieDetailIntent = new Intent(getActivity(), MovieDetailActivity.class);
 					Bundle mBundle = new Bundle();
-//					TODO - fix below
-					mBundle.putParcelable(MOVIE_INFO_PARCELABLE_KEY, new MovieInfo());
+					MovieInfo movieInfo = new MovieInfo();
+					movieInfo.setPosterPath(cursor.getString(COL_POSTER_PATH));
+					movieInfo.setAdult(cursor.getString(COL_ADULT));
+					movieInfo.setOverview(cursor.getString(COL_OVERVIEW));
+					movieInfo.setReleaseDate(cursor.getString(COL_RELEASE_DATE));
+					movieInfo.setId(cursor.getInt(COL_MOVIE_ID));
+					movieInfo.setOriginalTitle(cursor.getString(COL_ORIGINAL_TITLE));
+					movieInfo.setOriginalLanguage(cursor.getString(COL_ORIGINAL_LANGUAGE));
+					movieInfo.setTitle(cursor.getString(COL_TITLE));
+					movieInfo.setBackdropPath(cursor.getString(COL_BACKDROP_PATH));
+					movieInfo.setPopularity(cursor.getString(COL_POPULARITY));
+					movieInfo.setVoteCount(cursor.getString(COL_VOTE_COUNT));
+					movieInfo.setVideo(cursor.getString(COL_VIDEO));
+					movieInfo.setVoteAverage(cursor.getString(COL_VOTE_AVERAGE));
+					mBundle.putParcelable(MOVIE_INFO_PARCELABLE_KEY, movieInfo);
 					movieDetailIntent.putExtras(mBundle);
 					startActivity(movieDetailIntent);
 				}
 				mPosition = position;
 			}
 		});
+
+		// If there's instance state, mine it for useful information.
+		// The end-goal here is that the user never knows that turning their device sideways
+		// does crazy lifecycle related things.  It should feel like some stuff stretched out,
+		// or magically appeared to take advantage of room, but data or place in the app was never
+		// actually *lost*.
+		if (savedInstanceState != null && savedInstanceState.containsKey(SELECTED_KEY)) {
+			// The listview probably hasn't even been populated yet.  Actually perform the
+			// swapout in onLoadFinished.
+			mPosition = savedInstanceState.getInt(SELECTED_KEY);
+		}
+
 		return view;
 	}
 
@@ -366,10 +391,25 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 	}
 
 	@Override
-	public void onStart() {
-		super.onStart();
-		updateMovies();
+	public void onSaveInstanceState(Bundle outState) {
+		// When tablets rotate, the currently selected list item needs to be saved.
+		// When no item is selected, mPosition will be set to Listview.INVALID_POSITION,
+		// so check for that before storing.
+		if (mPosition != ListView.INVALID_POSITION) {
+			outState.putInt(SELECTED_KEY, mPosition);
+		}
+		super.onSaveInstanceState(outState);
 	}
+
+
+	private static final int MOVIE_LOADER = 0;
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		getLoaderManager().initLoader(MOVIE_LOADER, null, this);
+		super.onActivityCreated(savedInstanceState);
+	}
+
 
 	protected void updateMovies() {
 		FetchMoviesTask updateMoviesTask = new FetchMoviesTask();

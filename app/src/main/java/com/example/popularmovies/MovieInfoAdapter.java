@@ -36,15 +36,13 @@ public class MovieInfoAdapter extends CursorAdapter {
 	public void bindView(View view, Context context, Cursor cursor) {
 		ViewHolder viewHolder = (ViewHolder) view.getTag();
 // Lookup view for data population
-		ImageView moviePosterImageView = (ImageView) view.findViewById(R.id.movie_poster);
-		TextView movieTitleView = (TextView) view.findViewById(R.id.movie_title);
 		viewHolder.movieTitleView.setText(cursor.getString(MoviesGridFragment.COL_TITLE));
 		// Populate the data into the template view using the data object
 		Picasso.with(context).load("http://image.tmdb.org/t/p/w500/"
 				+ cursor.getString(MoviesGridFragment.COL_POSTER_PATH)
 				+ "?api_key="
 				+ BuildConfig.THE_MOVIE_DB_API_KEY
-				+ "&language=en&include_image_language=en,null").into(moviePosterImageView);
+				+ "&language=en&include_image_language=en,null").into(viewHolder.moviePosterImageView);
 	}
 
 	@Override
