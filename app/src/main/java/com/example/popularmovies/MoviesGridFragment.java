@@ -238,18 +238,18 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 	// These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
 	static final int COL_MOVIE_ID = 0;
 	static final int COL_ADULT = 1;
-	static final int COL_BACKDROP_PATH = 2;
-	static final int COL_FAVORITE = 3;
-	static final int COL_ORIGINAL_LANGUAGE = 4;
+	static final int COL_BACKDROP_PATH = 8;
+	static final int COL_FAVORITE = 12;
+	static final int COL_ORIGINAL_LANGUAGE = 6;
 	static final int COL_ORIGINAL_TITLE = 5;
-	static final int COL_OVERVIEW = 6;
-	static final int COL_POPULARITY = 7;
-	static final int COL_POSTER_PATH = 8;
-	static final int COL_RELEASE_DATE = 9;
-	static final int COL_TITLE = 10;
-	static final int COL_VIDEO = 11;
-	static final int COL_VOTE_AVERAGE = 12;
-	static final int COL_VOTE_COUNT = 13;
+	static final int COL_OVERVIEW = 3;
+	static final int COL_POPULARITY = 9;
+	static final int COL_POSTER_PATH = 2;
+	static final int COL_RELEASE_DATE = 4;
+	static final int COL_TITLE = 7;
+	static final int COL_VIDEO = 13;
+	static final int COL_VOTE_AVERAGE = 11;
+	static final int COL_VOTE_COUNT = 10;
 
 	private static final String[] MOVIE_COLUMNS = {
 			// In this case the id needs to be fully qualified with a table name, since
@@ -260,18 +260,18 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 			// So the convenience is worth it.
 			MoviesContract.MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID,
 			MoviesContract.MoviesEntry.COLUMN_ADULT,
-			MoviesContract.MoviesEntry.COLUMN_BACKDROP_PATH,
-			MoviesContract.MoviesEntry.COLUMN_FAVORITE,
-			MoviesContract.MoviesEntry.COLUMN_ORIGINAL_LANGUAGE,
-			MoviesContract.MoviesEntry.COLUMN_ORIGINAL_TITLE,
-			MoviesContract.MoviesEntry.COLUMN_OVERVIEW,
-			MoviesContract.MoviesEntry.COLUMN_POPULARITY,
 			MoviesContract.MoviesEntry.COLUMN_POSTER_PATH,
+			MoviesContract.MoviesEntry.COLUMN_OVERVIEW,
 			MoviesContract.MoviesEntry.COLUMN_RELEASE_DATE,
+			MoviesContract.MoviesEntry.COLUMN_ORIGINAL_TITLE,
+			MoviesContract.MoviesEntry.COLUMN_ORIGINAL_LANGUAGE,
 			MoviesContract.MoviesEntry.COLUMN_TITLE,
-			MoviesContract.MoviesEntry.COLUMN_VIDEO,
+			MoviesContract.MoviesEntry.COLUMN_BACKDROP_PATH,
+			MoviesContract.MoviesEntry.COLUMN_POPULARITY,
+			MoviesContract.MoviesEntry.COLUMN_VOTE_COUNT,
 			MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE,
-			MoviesContract.MoviesEntry.COLUMN_VOTE_COUNT
+			MoviesContract.MoviesEntry.COLUMN_FAVORITE,
+			MoviesContract.MoviesEntry.COLUMN_VIDEO
 	};
 	private static final String SELECTED_KEY = "selected_position";
 
@@ -308,7 +308,7 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 
 		return new CursorLoader(getActivity(),
 				MoviesEntry.CONTENT_URI,
-				null,
+				MOVIE_COLUMNS,
 				null,
 				null,
 				sortOrder);
