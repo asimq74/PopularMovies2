@@ -50,4 +50,13 @@ public class TestMoviesContract extends AndroidTestCase {
 				String.format("%s", TestUtilities.TEST_ID), videosByIdUri.getLastPathSegment());
 		assertEquals("Error: Videos by ID Uri doesn't match our expected result", videosByIdUri.toString(), "content://com.example.popularmovies/videos/" + TestUtilities.TEST_ID);
 	}
+
+	public void testBuildFavoritesById() {
+		Uri favoritesByIdUri = MoviesContract.FavoritesEntry.buildFavoritesById(TestUtilities.TEST_ID);
+		assertNotNull(String.format("Error: Null Uri returned.  You must fill-in %s in %s.", "buildFavoritesById", MoviesContract.class.getSimpleName()),
+				favoritesByIdUri);
+		assertEquals(String.format("Error: Movie ID not properly appended to the end of the Uri %s %s", TestUtilities.TEST_ID, favoritesByIdUri.getLastPathSegment()),
+				String.format("%s", TestUtilities.TEST_ID), favoritesByIdUri.getLastPathSegment());
+		assertEquals("Error: Favorites by ID Uri doesn't match our expected result", favoritesByIdUri.toString(), "content://com.example.popularmovies/favorites/" + TestUtilities.TEST_ID);
+	}
 }

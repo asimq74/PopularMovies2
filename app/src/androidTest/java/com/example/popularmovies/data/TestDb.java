@@ -21,6 +21,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
+import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
@@ -120,6 +121,7 @@ public class TestDb extends AndroidTestCase {
 		tableNameHashSet.add(MoviesEntry.TABLE_NAME);
 		tableNameHashSet.add(VideosEntry.TABLE_NAME);
 		tableNameHashSet.add(ReviewsEntry.TABLE_NAME);
+		tableNameHashSet.add(FavoritesEntry.TABLE_NAME);
 
 		mContext.deleteDatabase(MoviesDbHelper.DATABASE_NAME);
 		SQLiteDatabase db = new MoviesDbHelper(this.mContext).getWritableDatabase();
@@ -152,7 +154,6 @@ public class TestDb extends AndroidTestCase {
 		final HashSet<String> moviesColumnHashSet = new HashSet<>();
 		moviesColumnHashSet.add(MoviesEntry._ID);
 		moviesColumnHashSet.add(MoviesEntry.COLUMN_ADULT);
-		moviesColumnHashSet.add(MoviesEntry.COLUMN_FAVORITE);
 		moviesColumnHashSet.add(MoviesEntry.COLUMN_BACKDROP_PATH);
 		moviesColumnHashSet.add(MoviesEntry.COLUMN_ORIGINAL_LANGUAGE);
 		moviesColumnHashSet.add(MoviesEntry.COLUMN_ORIGINAL_TITLE);
@@ -194,6 +195,10 @@ public class TestDb extends AndroidTestCase {
 
 	public void testVideosTable() {
 		insertRow(VideosEntry.TABLE_NAME, TestUtilities.createVideoTestValues());
+	}
+
+	public void testFavoritesTable() {
+		insertRow(FavoritesEntry.TABLE_NAME, TestUtilities.createFavoritesTestValues());
 	}
 
 	protected void validateCurrentRecord(Cursor valueCursor, ContentValues expectedValues) {

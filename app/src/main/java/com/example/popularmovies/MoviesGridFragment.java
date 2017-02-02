@@ -99,7 +99,6 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 
 					movieValues.put(MoviesContract.MoviesEntry._ID, movieInfo.getId());
 					movieValues.put(MoviesContract.MoviesEntry.COLUMN_ADULT, 0);
-					movieValues.put(MoviesContract.MoviesEntry.COLUMN_FAVORITE, 0);
 					movieValues.put(MoviesContract.MoviesEntry.COLUMN_BACKDROP_PATH, movieInfo.getBackdropPath());
 					movieValues.put(MoviesContract.MoviesEntry.COLUMN_ORIGINAL_LANGUAGE, movieInfo.getOriginalLanguage());
 					movieValues.put(MoviesContract.MoviesEntry.COLUMN_ORIGINAL_TITLE, movieInfo.getOriginalTitle());
@@ -270,7 +269,6 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 			MoviesContract.MoviesEntry.COLUMN_POPULARITY,
 			MoviesContract.MoviesEntry.COLUMN_VOTE_COUNT,
 			MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE,
-			MoviesContract.MoviesEntry.COLUMN_FAVORITE,
 			MoviesContract.MoviesEntry.COLUMN_VIDEO
 	};
 	private static final String SELECTED_KEY = "selected_position";

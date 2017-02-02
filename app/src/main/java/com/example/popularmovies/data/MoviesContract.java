@@ -30,7 +30,6 @@ public class MoviesContract {
 
 		public static final String COLUMN_ADULT = "adult";
 		public static final String COLUMN_BACKDROP_PATH = "backdrop_path";
-		public static final String COLUMN_FAVORITE = "favorite";
 		public static final String COLUMN_ORIGINAL_LANGUAGE = "original_language";
 		public static final String COLUMN_ORIGINAL_TITLE = "original_title";
 		public static final String COLUMN_OVERVIEW = "overview";
@@ -56,7 +55,7 @@ public class MoviesContract {
 
 	}
 
-	/* Inner class that defines the table contents of the videos table */
+	/* Inner class that defines the table contents of the reviews table */
 	public static final class ReviewsEntry implements BaseColumns {
 
 		public static final String COLUMN_AUTHOR = "author";
@@ -74,6 +73,26 @@ public class MoviesContract {
 		public static final String TABLE_NAME = "reviews";
 
 		public static Uri buildReviewsById(long movieId) {
+			return ContentUris.withAppendedId(CONTENT_URI, movieId);
+		}
+	}
+
+	/* Inner class that defines the table contents of the favorites table */
+	public static final class FavoritesEntry implements BaseColumns {
+
+		public static final String COLUMN_MOVIE_ID = "movie_id";
+		public static final String COLUMN_FAVORITE = "favorite";
+
+		public static final String CONTENT_ITEM_TYPE =
+				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
+		public static final String CONTENT_TYPE =
+				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
+		public static final Uri CONTENT_URI =
+				BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES).build();
+		// Table name
+		public static final String TABLE_NAME = "favorites";
+
+		public static Uri buildFavoritesById(long movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 	}
@@ -115,6 +134,7 @@ public class MoviesContract {
 	// looking at weather data. content://com.example.android.sunshine.app/givemeroot/ will fail,
 	// as the ContentProvider hasn't been given any information on what to do with "givemeroot".
 	// At least, let's hope not.  Don't be that dev, reader.  Don't be that dev.
+	public static final String PATH_FAVORITES = "favorites";
 	public static final String PATH_MOVIES = "movies";
 	public static final String PATH_REVIEWS = "reviews";
 	public static final String PATH_VIDEOS = "videos";

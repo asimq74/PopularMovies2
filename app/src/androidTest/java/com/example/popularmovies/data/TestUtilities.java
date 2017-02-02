@@ -11,6 +11,7 @@ import android.os.HandlerThread;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
+import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
@@ -115,7 +116,6 @@ public class TestUtilities extends AndroidTestCase {
 		ContentValues movieValues = new ContentValues();
 		movieValues.put(MoviesEntry._ID, TEST_ID);
 		movieValues.put(MoviesEntry.COLUMN_ADULT, 0);
-		movieValues.put(MoviesEntry.COLUMN_FAVORITE, 0);
 		movieValues.put(MoviesEntry.COLUMN_BACKDROP_PATH, "/hETu6AxKsWAS42tw8eXgLUgn4Lo.jpg");
 		movieValues.put(MoviesEntry.COLUMN_ORIGINAL_LANGUAGE, "en");
 		movieValues.put(MoviesEntry.COLUMN_ORIGINAL_TITLE, "Doctor Strange");
@@ -138,7 +138,6 @@ public class TestUtilities extends AndroidTestCase {
 			ContentValues movieValues = new ContentValues();
 			movieValues.put(MoviesEntry._ID, i+1);
 			movieValues.put(MoviesEntry.COLUMN_ADULT, 0);
-			movieValues.put(MoviesEntry.COLUMN_FAVORITE, 0);
 			movieValues.put(MoviesEntry.COLUMN_BACKDROP_PATH, "/hETu6AxKsWAS42tw8eXgLUgn4Lo.jpg");
 			movieValues.put(MoviesEntry.COLUMN_ORIGINAL_LANGUAGE, "en");
 			movieValues.put(MoviesEntry.COLUMN_ORIGINAL_TITLE, "Doctor Strange");
@@ -175,6 +174,14 @@ public class TestUtilities extends AndroidTestCase {
 		videoValues.put(VideosEntry.COLUMN_SIZE, 1080);
 		videoValues.put(VideosEntry.COLUMN_TYPE, "Trailer");
 		return videoValues;
+	}
+
+	public static ContentValues createFavoritesTestValues() {
+		ContentValues favoriteValues = new ContentValues();
+		favoriteValues.put(FavoritesEntry._ID, "57992d84c3a3687e5c003a3b");
+		favoriteValues.put(FavoritesEntry.COLUMN_MOVIE_ID, TEST_ID);
+		favoriteValues.put(FavoritesEntry.COLUMN_FAVORITE, 1);
+		return favoriteValues;
 	}
 
 }

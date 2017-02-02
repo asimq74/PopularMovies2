@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.example.popularmovies.R;
+import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
@@ -29,6 +30,7 @@ public class MoviesProvider extends ContentProvider {
 	static final int MOVIE_TRAILERS = 300;
 	static final int REVIEWS = 301;
 	static final int TRAILERS = 302;
+	static final int FAVORITES = 303;
 	private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;
 	private static final SQLiteQueryBuilder movieTrailersByMovieIdQueryBuilder;
 	//location.location_setting = ?
@@ -40,6 +42,7 @@ public class MoviesProvider extends ContentProvider {
 	// The URI Matcher used by this content provider.
 	private static final UriMatcher sUriMatcher = buildUriMatcher();
 	private static final SQLiteQueryBuilder trailersQueryBuilder;
+	private static final SQLiteQueryBuilder favoritesQueryBuilder;
 
 	static {
 		movieTrailersByMovieIdQueryBuilder = new SQLiteQueryBuilder();
@@ -47,6 +50,7 @@ public class MoviesProvider extends ContentProvider {
 		moviesQueryBuilder = new SQLiteQueryBuilder();
 		reviewsQueryBuilder = new SQLiteQueryBuilder();
 		trailersQueryBuilder = new SQLiteQueryBuilder();
+		favoritesQueryBuilder = new SQLiteQueryBuilder();
 
 		moviesQueryBuilder.setTables(
 				MoviesContract.MoviesEntry.TABLE_NAME);
@@ -54,6 +58,8 @@ public class MoviesProvider extends ContentProvider {
 		trailersQueryBuilder.setTables(VideosEntry.TABLE_NAME);
 
 		reviewsQueryBuilder.setTables(ReviewsEntry.TABLE_NAME);
+
+		favoritesQueryBuilder.setTables(FavoritesEntry.TABLE_NAME);
 
 		//This is an inner join which looks like
 		//weather INNER JOIN location ON weather.location_id = location._id
@@ -75,6 +81,10 @@ public class MoviesProvider extends ContentProvider {
 						" = " + MoviesContract.ReviewsEntry.TABLE_NAME +
 						"." + MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID);
 	}
+
+	//location.location_setting = ? AND date = ?
+	private static final String favoritesMovieIdSelection =
+			FavoritesEntry.TABLE_NAME + "." + FavoritesEntry.COLUMN_MOVIE_ID + " = ?";
 
 	/*
 			Students: Here is where you need to create the UriMatcher. This UriMatcher will
@@ -99,6 +109,7 @@ public class MoviesProvider extends ContentProvider {
 		matcher.addURI(authority, MoviesContract.PATH_VIDEOS + "/*", MOVIE_TRAILERS);
 		matcher.addURI(authority, MoviesContract.PATH_REVIEWS, REVIEWS);
 		matcher.addURI(authority, MoviesContract.PATH_VIDEOS, TRAILERS);
+		matcher.addURI(authority, MoviesContract.PATH_FAVORITES, FAVORITES);
 		return matcher;
 	}
 
@@ -123,6 +134,10 @@ public class MoviesProvider extends ContentProvider {
 			case REVIEWS:
 				rowsDeleted = db.delete(
 						ReviewsEntry.TABLE_NAME, selection, selectionArgs);
+				break;
+			case FAVORITES:
+				rowsDeleted = db.delete(
+						FavoritesEntry.TABLE_NAME, selection, selectionArgs);
 				break;
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -191,6 +206,8 @@ public class MoviesProvider extends ContentProvider {
 				return ReviewsEntry.CONTENT_TYPE;
 			case TRAILERS:
 				return VideosEntry.CONTENT_TYPE;
+			case FAVORITES:
+				return FavoritesEntry.CONTENT_TYPE;
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
@@ -198,6 +215,17 @@ public class MoviesProvider extends ContentProvider {
 
 	private Cursor getVideos() {
 		return trailersQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				null,
+				null,
+				null,
+				null,
+				null,
+				null
+		);
+	}
+
+	private Cursor getFavorites() {
+		return favoritesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
 				null,
 				null,
 				null,
@@ -238,6 +266,14 @@ public class MoviesProvider extends ContentProvider {
 					throw new android.database.SQLException(formatFailedToInsertMessage(uri));
 				break;
 			}
+			case FAVORITES: {
+				long _id = db.replace(FavoritesEntry.TABLE_NAME, null, values);
+				if (_id > 0)
+					returnUri = FavoritesEntry.buildFavoritesById(_id);
+				else
+					throw new android.database.SQLException(formatFailedToInsertMessage(uri));
+				break;
+			}
 			default:
 				throw new UnsupportedOperationException(formatUnknownUriMessage(uri));
 		}
@@ -268,6 +304,10 @@ public class MoviesProvider extends ContentProvider {
 				retCursor = getVideos();
 				break;
 			}
+			case FAVORITES: {
+				retCursor = getFavorites();
+				break;
+			}
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
@@ -291,6 +331,9 @@ public class MoviesProvider extends ContentProvider {
 				break;
 			case REVIEWS:
 				rowsUpdated = db.update(ReviewsEntry.TABLE_NAME, values, selection, selectionArgs);
+				break;
+			case FAVORITES:
+				rowsUpdated = db.update(FavoritesEntry.TABLE_NAME, values, selection, selectionArgs);
 				break;
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
+import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
@@ -55,6 +56,11 @@ public class TestProvider extends AndroidTestCase {
 				null,
 				null
 		);
+		mContext.getContentResolver().delete(
+				FavoritesEntry.CONTENT_URI,
+				null,
+				null
+		);
 
 		Cursor cursor = mContext.getContentResolver().query(
 				MoviesEntry.CONTENT_URI,
@@ -85,6 +91,17 @@ public class TestProvider extends AndroidTestCase {
 		);
 		assertEquals("Error: Records not deleted from Reviews table during delete", 0, cursor.getCount());
 		cursor.close();
+
+		cursor = mContext.getContentResolver().query(
+				FavoritesEntry.CONTENT_URI,
+				null,
+				null,
+				null,
+				null
+		);
+		assertEquals("Error: Records not deleted from Favorites table during delete", 0, cursor.getCount());
+		cursor.close();
+
 	}
 
 	// Since we want each test to start with a clean slate, run deleteAllRecords
@@ -204,6 +221,9 @@ public class TestProvider extends AndroidTestCase {
 		testBasicQuery(VideosEntry.TABLE_NAME, VideosEntry.CONTENT_URI, TestUtilities.createVideoTestValues());
 	}
 
+	public void testBasicFavoritesQuery() {
+		testBasicQuery(FavoritesEntry.TABLE_NAME, FavoritesEntry.CONTENT_URI, TestUtilities.createFavoritesTestValues());
+	}
 
 	public static final String LOG_TAG = TestProvider.class.getSimpleName();
 
