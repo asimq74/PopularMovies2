@@ -31,6 +31,7 @@
             android:name=".data.MoviesProvider"
             android:exported="false"
             android:syncable="true" />
+        <service android:name=".service.FetchMoviesService"/>
     </application>
 
 </manifest>
