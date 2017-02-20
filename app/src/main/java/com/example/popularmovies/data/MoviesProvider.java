@@ -31,6 +31,9 @@ public class MoviesProvider extends ContentProvider {
 	static final int REVIEWS = 301;
 	static final int TRAILERS = 302;
 	static final int FAVORITES = 303;
+	static final int FAVORITE_BY_ID = 304;
+	static final int REMOVE_FAVORITE_BY_ID = 305;
+
 	private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;
 	private static final SQLiteQueryBuilder movieTrailersByMovieIdQueryBuilder;
 	//location.location_setting = ?
@@ -43,6 +46,7 @@ public class MoviesProvider extends ContentProvider {
 	private static final UriMatcher sUriMatcher = buildUriMatcher();
 	private static final SQLiteQueryBuilder trailersQueryBuilder;
 	private static final SQLiteQueryBuilder favoritesQueryBuilder;
+	private static final SQLiteQueryBuilder favoritesMovieIdSelectionQueryBuilder;
 
 	static {
 		movieTrailersByMovieIdQueryBuilder = new SQLiteQueryBuilder();
@@ -51,6 +55,7 @@ public class MoviesProvider extends ContentProvider {
 		reviewsQueryBuilder = new SQLiteQueryBuilder();
 		trailersQueryBuilder = new SQLiteQueryBuilder();
 		favoritesQueryBuilder = new SQLiteQueryBuilder();
+		favoritesMovieIdSelectionQueryBuilder = new SQLiteQueryBuilder();
 
 		moviesQueryBuilder.setTables(
 				MoviesContract.MoviesEntry.TABLE_NAME);
@@ -60,6 +65,8 @@ public class MoviesProvider extends ContentProvider {
 		reviewsQueryBuilder.setTables(ReviewsEntry.TABLE_NAME);
 
 		favoritesQueryBuilder.setTables(FavoritesEntry.TABLE_NAME);
+
+		favoritesMovieIdSelectionQueryBuilder.setTables(FavoritesEntry.TABLE_NAME);
 
 		//This is an inner join which looks like
 		//weather INNER JOIN location ON weather.location_id = location._id
@@ -83,7 +90,7 @@ public class MoviesProvider extends ContentProvider {
 	}
 
 	//location.location_setting = ? AND date = ?
-	private static final String favoritesMovieIdSelection =
+	public static final String favoritesMovieIdSelection =
 			FavoritesEntry.TABLE_NAME + "." + FavoritesEntry.COLUMN_MOVIE_ID + " = ?";
 
 	/*
@@ -110,6 +117,8 @@ public class MoviesProvider extends ContentProvider {
 		matcher.addURI(authority, MoviesContract.PATH_REVIEWS, REVIEWS);
 		matcher.addURI(authority, MoviesContract.PATH_VIDEOS, TRAILERS);
 		matcher.addURI(authority, MoviesContract.PATH_FAVORITES, FAVORITES);
+		matcher.addURI(authority, MoviesContract.PATH_FAVORITES + "/*", FAVORITE_BY_ID);
+		matcher.addURI(authority, MoviesContract.PATH_FAVORITES + "/*/" + FavoritesEntry.REMOVE, REMOVE_FAVORITE_BY_ID);
 		return matcher;
 	}
 
@@ -136,6 +145,10 @@ public class MoviesProvider extends ContentProvider {
 						ReviewsEntry.TABLE_NAME, selection, selectionArgs);
 				break;
 			case FAVORITES:
+				rowsDeleted = db.delete(
+						FavoritesEntry.TABLE_NAME, selection, selectionArgs);
+				break;
+			case REMOVE_FAVORITE_BY_ID:
 				rowsDeleted = db.delete(
 						FavoritesEntry.TABLE_NAME, selection, selectionArgs);
 				break;
@@ -235,6 +248,17 @@ public class MoviesProvider extends ContentProvider {
 		);
 	}
 
+	private Cursor getFavoriteById(String movieId) {
+		return favoritesMovieIdSelectionQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				null,
+				favoritesMovieIdSelection,
+				new String[]{movieId},
+				null,
+				null,
+				null
+		);
+	}
+
 	@Nullable
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
@@ -306,6 +330,10 @@ public class MoviesProvider extends ContentProvider {
 			}
 			case FAVORITES: {
 				retCursor = getFavorites();
+				break;
+			}
+			case FAVORITE_BY_ID: {
+				retCursor = getFavoriteById(selectionArgs[0]);
 				break;
 			}
 			default:

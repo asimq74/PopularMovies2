@@ -26,6 +26,7 @@ import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -94,6 +95,47 @@ public class TestDb extends AndroidTestCase {
 		cursor.close();
 		db.close();
 		return rowId;
+	}
+
+
+	/*
+			Students: This is a helper method for the testWeatherTable quiz. You can move your
+			code from testMoviesTable to here so that you can call this code from both
+			testWeatherTable and testMoviesTable.
+	 */
+	public int deleteRow(String tableName, String whereClause, String[] whereArgs) {
+		// First step: Get reference to writable database
+		// If there's an error in those massive SQL tableName creation Strings,
+		// errors will be thrown here when you try to get a writable database.
+		MoviesDbHelper dbHelper = new MoviesDbHelper(mContext);
+		SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+		int deletedRow = db.delete(tableName, whereClause, whereArgs);
+
+		// Verify we got a row back.
+		assertTrue(deletedRow != -1);
+
+		// Fourth Step: Query the database and receive a Cursor back
+		// A cursor is your primary interface to the query results.
+		Cursor cursor = db.query(
+				tableName,  // Table to Query
+				null, // all columns
+				whereClause, // Columns for the "where" clause
+				whereArgs, // Values for the "where" clause
+				null, // columns to group by
+				null, // columns to filter by row groups
+				null // sort order
+		);
+
+		// Move the cursor to a valid database row and check to see if we got any records back
+		// from the query
+		assertFalse(String.format("Error: Record still exists after attempted deletion of row %s from %s", Arrays.asList(whereArgs), tableName), cursor.moveToFirst());
+
+		// Close Cursor and Database
+		cursor.close();
+		db.close();
+
+		return deletedRow;
 	}
 
 	/*
@@ -199,6 +241,10 @@ public class TestDb extends AndroidTestCase {
 
 	public void testFavoritesTable() {
 		insertRow(FavoritesEntry.TABLE_NAME, TestUtilities.createFavoritesTestValues());
+	}
+
+	public void testDeleteFavoritesColumnFromTable() {
+		deleteRow(FavoritesEntry.TABLE_NAME, FavoritesEntry.COLUMN_MOVIE_ID + "=?", new String[]{String.valueOf(TestUtilities.TEST_ID)});
 	}
 
 	protected void validateCurrentRecord(Cursor valueCursor, ContentValues expectedValues) {

@@ -213,6 +213,34 @@ public class TestProvider extends AndroidTestCase {
 		TestUtilities.validateCursor(String.format("testBasicQuery for %s", tableName), cursor, testValues);
 	}
 
+
+	public void testFavoriteByIdQuery() {
+
+		testBasicQuery(FavoritesEntry.TABLE_NAME, FavoritesEntry.CONTENT_URI, TestUtilities.createFavoritesTestValues());
+
+		// Test the basic content provider query
+		Cursor cursor = mContext.getContentResolver().query(
+				FavoritesEntry.buildFavoritesById(TestUtilities.TEST_ID),
+				null,
+				null,
+				new String[]{Integer.toString(TestUtilities.TEST_ID)},
+				null
+		);
+
+		// Make sure we get the correct cursor out of the database
+		TestUtilities.validateCursor(String.format("testFavoriteByIdQuery for %s", FavoritesEntry.TABLE_NAME), cursor, TestUtilities.createFavoritesTestValues());
+
+		// Test the basic content provider query
+		int deletedRow = mContext.getContentResolver().delete(
+				FavoritesEntry.removeFavoriteById(TestUtilities.TEST_ID),
+				MoviesProvider.favoritesMovieIdSelection,
+				new String[]{Integer.toString(TestUtilities.TEST_ID)}
+		);
+
+		// Verify a row was deleted
+		assertTrue(deletedRow != -1);
+	}
+
 	public void testBasicReviewsQuery() {
 		testBasicQuery(ReviewsEntry.TABLE_NAME, ReviewsEntry.CONTENT_URI, TestUtilities.createReviewTestValues());
 	}

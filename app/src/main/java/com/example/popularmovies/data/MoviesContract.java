@@ -18,12 +18,38 @@ package com.example.popularmovies.data;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
+import android.net.Uri.Builder;
 import android.provider.BaseColumns;
 
 /**
  * Defines table and column names for the weather database.
  */
 public class MoviesContract {
+
+	/* Inner class that defines the table contents of the favorites table */
+	public static final class FavoritesEntry implements BaseColumns {
+
+		public static final String COLUMN_FAVORITE = "favorite";
+		public static final String COLUMN_MOVIE_ID = "movie_id";
+		public static final String CONTENT_ITEM_TYPE =
+				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
+		public static final String CONTENT_TYPE =
+				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
+		public static final Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES);
+		public static final Uri CONTENT_URI =
+				CONTENT_URI_BUILDER.build();
+		public static final String REMOVE = "remove";
+		// Table name
+		public static final String TABLE_NAME = "favorites";
+
+		public static Uri buildFavoritesById(long movieId) {
+			return ContentUris.withAppendedId(CONTENT_URI, movieId);
+		}
+
+		public static Uri removeFavoriteById(long movieId) {
+			return CONTENT_URI_BUILDER.appendPath(Long.valueOf(movieId).toString()).appendPath(REMOVE).build();
+		}
+	}
 
 	/* Inner class that defines the table contents of the weather table */
 	public static final class MoviesEntry implements BaseColumns {
@@ -73,26 +99,6 @@ public class MoviesContract {
 		public static final String TABLE_NAME = "reviews";
 
 		public static Uri buildReviewsById(long movieId) {
-			return ContentUris.withAppendedId(CONTENT_URI, movieId);
-		}
-	}
-
-	/* Inner class that defines the table contents of the favorites table */
-	public static final class FavoritesEntry implements BaseColumns {
-
-		public static final String COLUMN_MOVIE_ID = "movie_id";
-		public static final String COLUMN_FAVORITE = "favorite";
-
-		public static final String CONTENT_ITEM_TYPE =
-				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
-		public static final String CONTENT_TYPE =
-				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
-		public static final Uri CONTENT_URI =
-				BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES).build();
-		// Table name
-		public static final String TABLE_NAME = "favorites";
-
-		public static Uri buildFavoritesById(long movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 	}

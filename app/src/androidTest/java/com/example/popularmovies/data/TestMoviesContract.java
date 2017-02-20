@@ -17,12 +17,22 @@ package com.example.popularmovies.data;
 
 import android.net.Uri;
 import android.test.AndroidTestCase;
+import android.util.Log;
 
 /*
 		Students: This is NOT a complete test for the WeatherContract --- just for the functions
     that we expect you to write.
  */
 public class TestMoviesContract extends AndroidTestCase {
+
+	public void testBuildFavoritesById() {
+		Uri favoritesByIdUri = MoviesContract.FavoritesEntry.buildFavoritesById(TestUtilities.TEST_ID);
+		assertNotNull(String.format("Error: Null Uri returned.  You must fill-in %s in %s.", "buildFavoritesById", MoviesContract.class.getSimpleName()),
+				favoritesByIdUri);
+		assertEquals(String.format("Error: Movie ID not properly appended to the end of the Uri %s %s", TestUtilities.TEST_ID, favoritesByIdUri.getLastPathSegment()),
+				String.format("%s", TestUtilities.TEST_ID), favoritesByIdUri.getLastPathSegment());
+		assertEquals("Error: Favorites by ID Uri doesn't match our expected result", favoritesByIdUri.toString(), "content://com.example.popularmovies/favorites/" + TestUtilities.TEST_ID);
+	}
 
 	public void testBuildMovieById() {
 		Uri movieByIdUri = MoviesContract.MoviesEntry.buildMovieById(TestUtilities.TEST_ID);
@@ -51,12 +61,15 @@ public class TestMoviesContract extends AndroidTestCase {
 		assertEquals("Error: Videos by ID Uri doesn't match our expected result", videosByIdUri.toString(), "content://com.example.popularmovies/videos/" + TestUtilities.TEST_ID);
 	}
 
-	public void testBuildFavoritesById() {
-		Uri favoritesByIdUri = MoviesContract.FavoritesEntry.buildFavoritesById(TestUtilities.TEST_ID);
-		assertNotNull(String.format("Error: Null Uri returned.  You must fill-in %s in %s.", "buildFavoritesById", MoviesContract.class.getSimpleName()),
-				favoritesByIdUri);
-		assertEquals(String.format("Error: Movie ID not properly appended to the end of the Uri %s %s", TestUtilities.TEST_ID, favoritesByIdUri.getLastPathSegment()),
-				String.format("%s", TestUtilities.TEST_ID), favoritesByIdUri.getLastPathSegment());
-		assertEquals("Error: Favorites by ID Uri doesn't match our expected result", favoritesByIdUri.toString(), "content://com.example.popularmovies/favorites/" + TestUtilities.TEST_ID);
+	public void testDeleteFavoritesById() {
+		Uri deleteFavoritesByIdUri = MoviesContract.FavoritesEntry.removeFavoriteById(TestUtilities.TEST_ID);
+		assertNotNull(String.format("Error: Null Uri returned.  You must fill-in %s in %s.", "deleteFavoritesByIdUri", MoviesContract.class.getSimpleName()),
+				deleteFavoritesByIdUri);
+		assertEquals(String.format("Error: remove not properly appended to the end of the Uri %s %s", TestUtilities.TEST_ID, deleteFavoritesByIdUri.getLastPathSegment()),
+				String.format("%s", "remove"), deleteFavoritesByIdUri.getLastPathSegment());
+		assertEquals(String.format("Error: Movie ID not properly appended to the second to last of the Uri %s %s",
+				TestUtilities.TEST_ID, deleteFavoritesByIdUri.getPathSegments().get(deleteFavoritesByIdUri.getPathSegments().size() - 2)),
+				String.format("%s", TestUtilities.TEST_ID), deleteFavoritesByIdUri.getPathSegments().get(deleteFavoritesByIdUri.getPathSegments().size() - 2));
+		assertEquals("Error: Delete Favorites by ID Uri doesn't match our expected result", deleteFavoritesByIdUri.toString(), String.format("content://com.example.popularmovies/favorites/%s/remove", TestUtilities.TEST_ID));
 	}
 }
