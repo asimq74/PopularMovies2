@@ -1,7 +1,9 @@
 package com.example.popularmovies;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,23 +15,22 @@ import android.view.MenuItem;
  */
 public class MainActivity extends ActionBarActivity {
 
+    private String currentMovieSearchCriteria = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        currentMovieSearchCriteria = Utility.getPreferredCriteria(this);
         setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, MoviesGridFragment.newInstance())
-                    .commit();
-        }
+        MoviesGridFragment moviesGridFragment = (MoviesGridFragment) getSupportFragmentManager().findFragmentById(R.id.movies_grid_fragment);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_main, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -47,4 +48,16 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String newMovieSearchCriteria = Utility.getPreferredCriteria(this);
+        if (newMovieSearchCriteria != null && !newMovieSearchCriteria.equals(currentMovieSearchCriteria)) {
+            MoviesGridFragment moviesGridFragment = (MoviesGridFragment) getSupportFragmentManager().findFragmentById(R.id.movies_grid_fragment);
+            if (null != moviesGridFragment) {
+                moviesGridFragment.onMoviesSortCriteriaChanged();
+            }
+        }
+			currentMovieSearchCriteria = newMovieSearchCriteria;
+    }
 }

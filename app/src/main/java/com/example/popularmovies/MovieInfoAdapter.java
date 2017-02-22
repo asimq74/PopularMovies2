@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -20,11 +19,9 @@ public class MovieInfoAdapter extends CursorAdapter {
 	public static class ViewHolder {
 
 		public final ImageView moviePosterImageView;
-		public final TextView movieTitleView;
 
 		public ViewHolder(View view) {
 			moviePosterImageView = (ImageView) view.findViewById(R.id.movie_poster);
-			movieTitleView = (TextView) view.findViewById(R.id.movie_title);
 		}
 	}
 
@@ -35,8 +32,6 @@ public class MovieInfoAdapter extends CursorAdapter {
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 		ViewHolder viewHolder = (ViewHolder) view.getTag();
-// Lookup view for data population
-		viewHolder.movieTitleView.setText(cursor.getString(MoviesGridFragment.COL_TITLE));
 		// Populate the data into the template view using the data object
 		Picasso.with(context).load("http://image.tmdb.org/t/p/w500/"
 				+ cursor.getString(MoviesGridFragment.COL_POSTER_PATH)

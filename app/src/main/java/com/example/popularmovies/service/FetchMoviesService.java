@@ -19,6 +19,7 @@ import android.util.Log;
 import com.example.popularmovies.BuildConfig;
 import com.example.popularmovies.businessobjects.MovieInfo;
 import com.example.popularmovies.data.MoviesContract;
+import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,6 +96,10 @@ public class FetchMoviesService extends IntentService {
 
 				cVVector.add(movieValues);
 			}
+
+			int rowsDeleted = getApplicationContext().getContentResolver().delete(MoviesEntry.CONTENT_URI, null, null);
+			Log.d(TAG, "FetchMoviesTask before update. " + rowsDeleted + " Deleted");
+
 			int inserted = 0;
 			// add to database
 			if (cVVector.size() > 0) {
