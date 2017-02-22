@@ -184,4 +184,11 @@ public class TestUtilities extends AndroidTestCase {
 		return favoriteValues;
 	}
 
+	public static ContentValues createFavoriteMoviesTestValues() {
+		ContentValues favoriteMoviesTestValues = new ContentValues();
+		favoriteMoviesTestValues.putAll(createMoviesTestValues());
+		favoriteMoviesTestValues.putAll(createFavoritesTestValues());
+		return favoriteMoviesTestValues;
+	}
+
 }

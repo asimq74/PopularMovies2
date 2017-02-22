@@ -23,6 +23,7 @@ public class TestUriMatcher extends AndroidTestCase {
 	private static final Uri TEST_MOVIE_TRAILERS = VideosEntry.buildVideosById(TEST_MOVIE_ID);
 	private static final Uri TEST_FAVORITE_BY_ID = FavoritesEntry.buildFavoritesById(TEST_MOVIE_ID);
 	private static final Uri TEST_REMOVE_FAVORITE_BY_ID = FavoritesEntry.removeFavoriteById(TEST_MOVIE_ID);
+	private static final Uri TEST_FAVORITE_MOVIES = MoviesEntry.buildFavoriteMovies();
 
 	/*
 			Students: This function tests that your UriMatcher returns the correct integer value
@@ -49,5 +50,8 @@ public class TestUriMatcher extends AndroidTestCase {
 		Log.d(getClass().getSimpleName(), String.format("TEST_REMOVE_FAVORITE_BY_ID: %s MoviesProvider.REMOVE_FAVORITE_BY_ID: %s", TEST_REMOVE_FAVORITE_BY_ID, MoviesProvider.REMOVE_FAVORITE_BY_ID));
 		assertEquals("Error: The LOCATION URI was matched incorrectly.",
 				testMatcher.match(TEST_REMOVE_FAVORITE_BY_ID), MoviesProvider.REMOVE_FAVORITE_BY_ID);
+		Log.d(getClass().getSimpleName(), String.format("TEST_FAVORITE_MOVIES: %s MoviesProvider.TEST_FAVORITE_MOVIES: %s", TEST_FAVORITE_MOVIES, MoviesProvider.FAVORITE_MOVIES));
+		assertEquals("Error: The LOCATION URI was matched incorrectly.",
+				testMatcher.match(TEST_FAVORITE_MOVIES), MoviesProvider.FAVORITE_MOVIES);
 	}
 }

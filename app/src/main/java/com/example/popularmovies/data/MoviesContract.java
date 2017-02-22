@@ -71,14 +71,17 @@ public class MoviesContract {
 				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
 		public static final String CONTENT_TYPE =
 				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
+		public static final Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES);
 		public static final Uri CONTENT_URI =
-				BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES).build();
+				CONTENT_URI_BUILDER.build();
 		public static final String TABLE_NAME = "movies";
 
 		public static Uri buildMovieById(long movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
-
+		public static Uri buildFavoriteMovies() {
+			return CONTENT_URI_BUILDER.appendPath(PATH_FAVORITES).build();
+		}
 	}
 
 	/* Inner class that defines the table contents of the reviews table */

@@ -2,6 +2,7 @@ package com.example.popularmovies;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -17,7 +18,6 @@ import android.widget.GridView;
 import android.widget.ListView;
 
 import com.example.popularmovies.businessobjects.MovieConstants;
-import com.example.popularmovies.businessobjects.MovieInfo;
 import com.example.popularmovies.data.MoviesContract;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.service.FetchMoviesService;
@@ -32,6 +32,18 @@ import com.example.popularmovies.service.FetchMoviesService;
  */
 public class MoviesGridFragment extends Fragment implements MovieConstants, LoaderManager.LoaderCallbacks<Cursor> {
 
+	/**
+	 * A callback interface that all activities containing this fragment must
+	 * implement. This mechanism allows activities to be notified of item
+	 * selections.
+	 */
+	public interface MovieDetailSelectedItemCallback {
+
+		/**
+		 * DetailFragmentCallback for when an item has been selected.
+		 */
+		public void onItemSelected(Uri detailUri);
+	}
 	static final int COL_ADULT = 1;
 	static final int COL_BACKDROP_PATH = 8;
 	static final int COL_FAVORITE = 12;
@@ -47,7 +59,6 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 	static final int COL_VIDEO = 13;
 	static final int COL_VOTE_AVERAGE = 11;
 	static final int COL_VOTE_COUNT = 10;
-
 	private static final String[] MOVIE_COLUMNS = {
 			// In this case the id needs to be fully qualified with a table name, since
 			// the content provider joins the location & weather tables in the background
@@ -140,25 +151,7 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 			public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 				Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
 				if (cursor != null) {
-					Intent movieDetailIntent = new Intent(getActivity(), MovieDetailActivity.class);
-					Bundle mBundle = new Bundle();
-					MovieInfo movieInfo = new MovieInfo();
-					movieInfo.setPosterPath(cursor.getString(COL_POSTER_PATH));
-					movieInfo.setAdult(cursor.getString(COL_ADULT));
-					movieInfo.setOverview(cursor.getString(COL_OVERVIEW));
-					movieInfo.setReleaseDate(cursor.getString(COL_RELEASE_DATE));
-					movieInfo.setId(cursor.getInt(COL_MOVIE_ID));
-					movieInfo.setOriginalTitle(cursor.getString(COL_ORIGINAL_TITLE));
-					movieInfo.setOriginalLanguage(cursor.getString(COL_ORIGINAL_LANGUAGE));
-					movieInfo.setTitle(cursor.getString(COL_TITLE));
-					movieInfo.setBackdropPath(cursor.getString(COL_BACKDROP_PATH));
-					movieInfo.setPopularity(cursor.getString(COL_POPULARITY));
-					movieInfo.setVoteCount(cursor.getString(COL_VOTE_COUNT));
-					movieInfo.setVideo(cursor.getString(COL_VIDEO));
-					movieInfo.setVoteAverage(cursor.getString(COL_VOTE_AVERAGE));
-					mBundle.putParcelable(MOVIE_INFO_PARCELABLE_KEY, movieInfo);
-					movieDetailIntent.putExtras(mBundle);
-					startActivity(movieDetailIntent);
+					((MovieDetailSelectedItemCallback) getActivity()).onItemSelected(MoviesContract.MoviesEntry.buildMovieById(cursor.getInt(COL_MOVIE_ID)));
 				}
 				mPosition = position;
 			}

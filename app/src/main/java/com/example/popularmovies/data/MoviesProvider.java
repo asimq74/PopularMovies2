@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.graphics.Movie;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,16 +25,25 @@ import com.example.popularmovies.data.MoviesContract.VideosEntry;
 
 public class MoviesProvider extends ContentProvider {
 
+	static final int FAVORITES = 303;
+	static final int FAVORITE_BY_ID = 304;
 	static final int MOVIES = 100;
 	static final int MOVIE_BY_ID = 101;
 	static final int MOVIE_REVIEWS = 102;
 	static final int MOVIE_TRAILERS = 300;
+	static final int REMOVE_FAVORITE_BY_ID = 305;
 	static final int REVIEWS = 301;
 	static final int TRAILERS = 302;
-	static final int FAVORITES = 303;
-	static final int FAVORITE_BY_ID = 304;
-	static final int REMOVE_FAVORITE_BY_ID = 305;
+	static final int FAVORITE_MOVIES = 305;
 
+	private static final SQLiteQueryBuilder favoriteMoviesQueryBuilder;
+	//location.location_setting = ? AND date = ?
+	public static final String favoritesMovieIdSelection =
+			FavoritesEntry.TABLE_NAME + "." + FavoritesEntry.COLUMN_MOVIE_ID + " = ?";
+	public static final String moviesIdSelection =
+			MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = ?";
+	private static final SQLiteQueryBuilder favoritesMovieIdSelectionQueryBuilder;
+	private static final SQLiteQueryBuilder favoritesQueryBuilder;
 	private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;
 	private static final SQLiteQueryBuilder movieTrailersByMovieIdQueryBuilder;
 	//location.location_setting = ?
@@ -45,8 +55,6 @@ public class MoviesProvider extends ContentProvider {
 	// The URI Matcher used by this content provider.
 	private static final UriMatcher sUriMatcher = buildUriMatcher();
 	private static final SQLiteQueryBuilder trailersQueryBuilder;
-	private static final SQLiteQueryBuilder favoritesQueryBuilder;
-	private static final SQLiteQueryBuilder favoritesMovieIdSelectionQueryBuilder;
 
 	static {
 		movieTrailersByMovieIdQueryBuilder = new SQLiteQueryBuilder();
@@ -56,6 +64,11 @@ public class MoviesProvider extends ContentProvider {
 		trailersQueryBuilder = new SQLiteQueryBuilder();
 		favoritesQueryBuilder = new SQLiteQueryBuilder();
 		favoritesMovieIdSelectionQueryBuilder = new SQLiteQueryBuilder();
+		favoriteMoviesQueryBuilder = new SQLiteQueryBuilder();
+
+		favoriteMoviesQueryBuilder.setTables(
+				MoviesEntry.TABLE_NAME + " INNER JOIN " + FavoritesEntry.TABLE_NAME +
+						" ON " + MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = " + FavoritesEntry.TABLE_NAME + "." + FavoritesEntry.COLUMN_MOVIE_ID);
 
 		moviesQueryBuilder.setTables(
 				MoviesContract.MoviesEntry.TABLE_NAME);
@@ -89,10 +102,6 @@ public class MoviesProvider extends ContentProvider {
 						"." + MoviesContract.ReviewsEntry.COLUMN_MOVIE_ID);
 	}
 
-	//location.location_setting = ? AND date = ?
-	public static final String favoritesMovieIdSelection =
-			FavoritesEntry.TABLE_NAME + "." + FavoritesEntry.COLUMN_MOVIE_ID + " = ?";
-
 	/*
 			Students: Here is where you need to create the UriMatcher. This UriMatcher will
 			match each URI to the WEATHER, WEATHER_WITH_LOCATION, WEATHER_WITH_LOCATION_AND_DATE,
@@ -111,6 +120,7 @@ public class MoviesProvider extends ContentProvider {
 
 		// For each type of URI you want to add, create a corresponding code.
 		matcher.addURI(authority, MoviesContract.PATH_MOVIES, MOVIES);
+		matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/" + MoviesContract.PATH_FAVORITES, FAVORITE_MOVIES);
 		matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*", MOVIE_BY_ID);
 		matcher.addURI(authority, MoviesContract.PATH_REVIEWS + "/*", MOVIE_REVIEWS);
 		matcher.addURI(authority, MoviesContract.PATH_VIDEOS + "/*", MOVIE_TRAILERS);
@@ -177,6 +187,50 @@ public class MoviesProvider extends ContentProvider {
 		return formatString(R.string.unknown_uri, uri);
 	}
 
+	private Cursor getFavoriteById(String movieId) {
+		return favoritesMovieIdSelectionQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				null,
+				favoritesMovieIdSelection,
+				new String[]{movieId},
+				null,
+				null,
+				null
+		);
+	}
+
+	private Cursor getMovieById(String movieId) {
+		return moviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				null,
+				moviesIdSelection,
+				new String[]{movieId},
+				null,
+				null,
+				null
+		);
+	}
+
+	private Cursor getFavorites() {
+		return favoritesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				null,
+				null,
+				null,
+				null,
+				null,
+				null
+		);
+	}
+
+	private Cursor getFavoriteMovies() {
+		return favoriteMoviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				null,
+				null,
+				null,
+				null,
+				null,
+				null
+		);
+	}
+
 	private Cursor getMovies() {
 		return moviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
 				null,
@@ -221,6 +275,8 @@ public class MoviesProvider extends ContentProvider {
 				return VideosEntry.CONTENT_TYPE;
 			case FAVORITES:
 				return FavoritesEntry.CONTENT_TYPE;
+			case FAVORITE_MOVIES:
+				return MoviesEntry.CONTENT_TYPE;
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
 		}
@@ -231,28 +287,6 @@ public class MoviesProvider extends ContentProvider {
 				null,
 				null,
 				null,
-				null,
-				null,
-				null
-		);
-	}
-
-	private Cursor getFavorites() {
-		return favoritesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-				null,
-				null,
-				null,
-				null,
-				null,
-				null
-		);
-	}
-
-	private Cursor getFavoriteById(String movieId) {
-		return favoritesMovieIdSelectionQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-				null,
-				favoritesMovieIdSelection,
-				new String[]{movieId},
 				null,
 				null,
 				null
@@ -334,6 +368,14 @@ public class MoviesProvider extends ContentProvider {
 			}
 			case FAVORITE_BY_ID: {
 				retCursor = getFavoriteById(selectionArgs[0]);
+				break;
+			}
+			case FAVORITE_MOVIES: {
+				retCursor = getFavoriteMovies();
+				break;
+			}
+			case MOVIE_BY_ID: {
+				retCursor = getMovieById(selectionArgs[0]);
 				break;
 			}
 			default:

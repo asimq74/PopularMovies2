@@ -241,6 +241,25 @@ public class TestProvider extends AndroidTestCase {
 		assertTrue(deletedRow != -1);
 	}
 
+	public void testFavoriteMoviesQuery() {
+
+		testBasicQuery(MoviesEntry.TABLE_NAME, MoviesEntry.CONTENT_URI, TestUtilities.createMoviesTestValues());
+		testBasicQuery(FavoritesEntry.TABLE_NAME, FavoritesEntry.CONTENT_URI, TestUtilities.createFavoritesTestValues());
+
+		// Test the basic content provider query
+		Cursor cursor = mContext.getContentResolver().query(
+				MoviesEntry.buildFavoriteMovies(),
+				null,
+				null,
+				null,
+				null
+		);
+
+		// Make sure we get the correct cursor out of the database
+		TestUtilities.validateCursor(String.format("testFavoriteMoviesQuery for %s", MoviesEntry.TABLE_NAME), cursor, TestUtilities.createFavoriteMoviesTestValues());
+
+	}
+
 	public void testBasicReviewsQuery() {
 		testBasicQuery(ReviewsEntry.TABLE_NAME, ReviewsEntry.CONTENT_URI, TestUtilities.createReviewTestValues());
 	}
