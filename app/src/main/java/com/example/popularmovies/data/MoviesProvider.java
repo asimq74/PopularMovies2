@@ -198,16 +198,17 @@ public class MoviesProvider extends ContentProvider {
 		);
 	}
 
-	private Cursor getMovieById(String movieId) {
+	private Cursor getMovieById(Uri uri, String[] projection) {
 		return moviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-				null,
+				projection,
 				moviesIdSelection,
-				new String[]{movieId},
+				new String[]{uri.getLastPathSegment()},
 				null,
 				null,
 				null
 		);
 	}
+
 
 	private Cursor getFavorites() {
 		return favoritesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
@@ -375,7 +376,7 @@ public class MoviesProvider extends ContentProvider {
 				break;
 			}
 			case MOVIE_BY_ID: {
-				retCursor = getMovieById(selectionArgs[0]);
+				retCursor = getMovieById(uri, projection);
 				break;
 			}
 			default:

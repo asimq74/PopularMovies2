@@ -85,7 +85,7 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
             mUri,
             MOVIE_COLUMNS,
             null,
-            new String[]{},
+            null,
             null);
     }
 
