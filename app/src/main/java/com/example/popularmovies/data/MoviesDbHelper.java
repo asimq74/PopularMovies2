@@ -20,6 +20,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
+import com.example.popularmovies.data.MoviesContract.HighestRatedEntry;
+import com.example.popularmovies.data.MoviesContract.MostPopularEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
@@ -31,7 +33,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
 	static final String DATABASE_NAME = "movies.db";
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 4;
+	private static final int DATABASE_VERSION = 5;
 
 	public MoviesDbHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -39,6 +41,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
 		// Create a table to hold videos
 		final String SQL_CREATE_VIDEOS_TABLE = "CREATE TABLE " + VideosEntry.TABLE_NAME + " (" +
 				VideosEntry._ID + " TEXT PRIMARY KEY," +
@@ -72,6 +75,22 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 				" FOREIGN KEY (" + FavoritesEntry.COLUMN_MOVIE_ID + ") REFERENCES " +
 				MoviesEntry.TABLE_NAME + " (" + MoviesEntry._ID + "));";
 
+		// Create a table to hold references to most popular movies
+		final String SQL_CREATE_MOST_POPULAR_TABLE = "CREATE TABLE " + MostPopularEntry.TABLE_NAME + " (" +
+				MostPopularEntry._ID + " TEXT PRIMARY KEY," +
+				MostPopularEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
+				// Set up the location column as a foreign key to location table.
+				" FOREIGN KEY (" + MostPopularEntry.COLUMN_MOVIE_ID + ") REFERENCES " +
+				MoviesEntry.TABLE_NAME + " (" + MoviesEntry._ID + "));";
+
+		// Create a table to hold references to most popular movies
+		final String SQL_CREATE_HIGHEST_RATED_TABLE = "CREATE TABLE " + HighestRatedEntry.TABLE_NAME + " (" +
+				HighestRatedEntry._ID + " TEXT PRIMARY KEY," +
+				HighestRatedEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
+				// Set up the location column as a foreign key to location table.
+				" FOREIGN KEY (" + HighestRatedEntry.COLUMN_MOVIE_ID + ") REFERENCES " +
+				MoviesEntry.TABLE_NAME + " (" + MoviesEntry._ID + "));";
+
 		final String SQL_CREATE_MOVIES_TABLE = "CREATE TABLE " + MoviesEntry.TABLE_NAME + " (" +
 				// Why AutoIncrement here, and not above?
 				// Unique keys will be auto-generated in either case.  But for weather
@@ -99,6 +118,8 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.execSQL(SQL_CREATE_VIDEOS_TABLE);
 		sqLiteDatabase.execSQL(SQL_CREATE_REVIEWS_TABLE);
 		sqLiteDatabase.execSQL(SQL_CREATE_FAVORITES_TABLE);
+		sqLiteDatabase.execSQL(SQL_CREATE_MOST_POPULAR_TABLE);
+		sqLiteDatabase.execSQL(SQL_CREATE_HIGHEST_RATED_TABLE);
 	}
 
 	@Override
@@ -113,6 +134,8 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 		sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MoviesEntry.TABLE_NAME);
 		sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ReviewsEntry.TABLE_NAME);
 		sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + FavoritesEntry.TABLE_NAME);
+		sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + MostPopularEntry.TABLE_NAME);
+		sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + HighestRatedEntry.TABLE_NAME);
 		onCreate(sqLiteDatabase);
 	}
 }

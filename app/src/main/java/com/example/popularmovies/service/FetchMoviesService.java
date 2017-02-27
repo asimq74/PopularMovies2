@@ -17,8 +17,11 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.example.popularmovies.BuildConfig;
+import com.example.popularmovies.R;
 import com.example.popularmovies.businessobjects.MovieInfo;
 import com.example.popularmovies.data.MoviesContract;
+import com.example.popularmovies.data.MoviesContract.HighestRatedEntry;
+import com.example.popularmovies.data.MoviesContract.MostPopularEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 
 import org.json.JSONArray;
@@ -77,9 +80,10 @@ public class FetchMoviesService extends IntentService {
 			moviesJsonString = buffer.toString();
 			movieInfos = formatJson(moviesJsonString);
 			Vector<ContentValues> cVVector = new Vector<ContentValues>(movieInfos.size());
+			List<Integer> ids = new ArrayList<>();
 			for (MovieInfo movieInfo : movieInfos) {
 				ContentValues movieValues = new ContentValues();
-
+				ids.add(movieInfo.getId());
 				movieValues.put(MoviesContract.MoviesEntry._ID, movieInfo.getId());
 				movieValues.put(MoviesContract.MoviesEntry.COLUMN_ADULT, 0);
 				movieValues.put(MoviesContract.MoviesEntry.COLUMN_BACKDROP_PATH, movieInfo.getBackdropPath());
@@ -97,17 +101,23 @@ public class FetchMoviesService extends IntentService {
 				cVVector.add(movieValues);
 			}
 
+
 			int rowsDeleted = getApplicationContext().getContentResolver().delete(MoviesEntry.CONTENT_URI, null, null);
 			Log.d(TAG, "FetchMoviesTask before update. " + rowsDeleted + " Deleted");
 
 			int inserted = 0;
+			int sortCriteriaInserted = 0;
 			// add to database
 			if (cVVector.size() > 0) {
 				ContentValues[] cvArray = new ContentValues[cVVector.size()];
 				cVVector.toArray(cvArray);
 				inserted = getApplicationContext().getContentResolver().bulkInsert(MoviesContract.MoviesEntry.CONTENT_URI, cvArray);
+				if (criteria.equals(R.string.top_rated)) {
+					sortCriteriaInserted = getApplicationContext().getContentResolver().bulkInsert(criteria.equals(R.string.top_rated)? HighestRatedEntry.CONTENT_URI: MostPopularEntry.CONTENT_URI, cvArray);
+				}
 			}
-			Log.d(TAG, "FetchMoviesTask Complete. " + inserted + " Inserted");
+			Log.d(TAG, "FetchMoviesTask Complete. " + inserted + " Inserted in " + MoviesEntry.TABLE_NAME);
+			Log.d(TAG, "FetchMoviesTask Complete. " + sortCriteriaInserted + " Inserted in " + (criteria.equals(R.string.top_rated)? HighestRatedEntry.TABLE_NAME: MostPopularEntry.TABLE_NAME));
 
 		} catch (JSONException e) {
 			Log.e(TAG, String.format("JSONException Error e: %s", e.getMessage()), e);

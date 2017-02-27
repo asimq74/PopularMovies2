@@ -22,7 +22,6 @@ public class MainActivity extends ActionBarActivity implements MovieDetailSelect
 		super.onCreate(savedInstanceState);
 		currentMovieSearchCriteria = Utility.getPreferredCriteria(this);
 		setContentView(R.layout.activity_main);
-		MoviesGridFragment moviesGridFragment = (MoviesGridFragment) getSupportFragmentManager().findFragmentById(R.id.movies_grid_fragment);
 	}
 
 	@Override
@@ -54,11 +53,14 @@ public class MainActivity extends ActionBarActivity implements MovieDetailSelect
 		return super.onOptionsItemSelected(item);
 	}
 
+
 	@Override
 	protected void onResume() {
 		super.onResume();
 		String newMovieSearchCriteria = Utility.getPreferredCriteria(this);
-		if (newMovieSearchCriteria != null && !newMovieSearchCriteria.equals(currentMovieSearchCriteria)) {
+		if (newMovieSearchCriteria != null
+//				&& !newMovieSearchCriteria.equals(currentMovieSearchCriteria)
+ ) {
 			MoviesGridFragment moviesGridFragment = (MoviesGridFragment) getSupportFragmentManager().findFragmentById(R.id.movies_grid_fragment);
 			if (null != moviesGridFragment) {
 				moviesGridFragment.onMoviesSortCriteriaChanged();

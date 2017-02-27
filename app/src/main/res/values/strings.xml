@@ -8,4 +8,6 @@
     <string name="release_date_label">Release Date:</string>
     <string name="failed_to_insert_or_replace">Failed to insert or replace row into %s</string>
     <string name="unknown_uri">Unknown uri: %s</string>
+    <string name="popular">popular</string>
+    <string name="top_rated">top_rated</string>
 </resources>
