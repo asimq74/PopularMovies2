@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
 import com.example.popularmovies.MoviesGridFragment.MovieDetailSelectedItemCallback;
@@ -20,7 +21,7 @@ public class MainActivity extends ActionBarActivity implements MovieDetailSelect
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		currentMovieSearchCriteria = Utility.getPreferredCriteria(this);
+//		currentMovieSearchCriteria = Utility.getPreferredCriteria(this);
 		setContentView(R.layout.activity_main);
 	}
 
@@ -58,9 +59,7 @@ public class MainActivity extends ActionBarActivity implements MovieDetailSelect
 	protected void onResume() {
 		super.onResume();
 		String newMovieSearchCriteria = Utility.getPreferredCriteria(this);
-		if (newMovieSearchCriteria != null
-//				&& !newMovieSearchCriteria.equals(currentMovieSearchCriteria)
- ) {
+		if (newMovieSearchCriteria != null && !newMovieSearchCriteria.equals(currentMovieSearchCriteria)) {
 			MoviesGridFragment moviesGridFragment = (MoviesGridFragment) getSupportFragmentManager().findFragmentById(R.id.movies_grid_fragment);
 			if (null != moviesGridFragment) {
 				moviesGridFragment.onMoviesSortCriteriaChanged();

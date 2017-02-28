@@ -70,6 +70,10 @@ public class MoviesContract {
 		public static Uri removeMostPopularById(long movieId) {
 			return CONTENT_URI_BUILDER.appendPath(Long.valueOf(movieId).toString()).appendPath(REMOVE).build();
 		}
+
+		public static Uri removeAllMostPopular() {
+			return BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOST_POPULAR).appendPath(REMOVE).build();
+		}
 	}
 
 	/* Inner class that defines the table contents of the highest_rated table */
@@ -91,6 +95,10 @@ public class MoviesContract {
 
 		public static Uri removeHighestRatedById(long movieId) {
 			return CONTENT_URI_BUILDER.appendPath(Long.valueOf(movieId).toString()).appendPath(REMOVE).build();
+		}
+
+		public static Uri removeAllHighestRated() {
+			return BASE_CONTENT_URI.buildUpon().appendPath(PATH_HIGHEST_RATED).appendPath(REMOVE).build();
 		}
 	}
 

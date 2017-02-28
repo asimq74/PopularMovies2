@@ -10,6 +10,7 @@ import android.graphics.Movie;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.popularmovies.R;
 import com.example.popularmovies.Utility;
@@ -42,6 +43,8 @@ public class MoviesProvider extends ContentProvider {
 	static final int HIGHEST_RATED_MOVIES = 308;
 	static final int REMOVE_HIGHEST_RATED_MOVIES_BY_ID = 309;
 	static final int REMOVE_MOST_POPULAR_MOVIES_BY_ID = 310;
+	static final int REMOVE_HIGHEST_RATED_MOVIES = 311;
+	static final int REMOVE_MOST_POPULAR_MOVIES = 312;
 
 	private static final SQLiteQueryBuilder favoriteMoviesQueryBuilder;
 	//location.location_setting = ? AND date = ?
@@ -149,8 +152,10 @@ public class MoviesProvider extends ContentProvider {
 		matcher.addURI(authority, MoviesContract.PATH_FAVORITES + "/*", FAVORITE_BY_ID);
 		matcher.addURI(authority, MoviesContract.PATH_FAVORITES + "/*/" + MoviesContract.REMOVE, REMOVE_FAVORITE_BY_ID);
 		matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR, MOST_POPULAR_MOVIES);
+		matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR + "/" + MoviesContract.REMOVE, REMOVE_MOST_POPULAR_MOVIES);
 		matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR + "/*/" + MoviesContract.REMOVE, REMOVE_MOST_POPULAR_MOVIES_BY_ID);
 		matcher.addURI(authority, MoviesContract.PATH_HIGHEST_RATED, HIGHEST_RATED_MOVIES);
+		matcher.addURI(authority, MoviesContract.PATH_HIGHEST_RATED + "/" + MoviesContract.REMOVE, REMOVE_HIGHEST_RATED_MOVIES);
 		matcher.addURI(authority, MoviesContract.PATH_HIGHEST_RATED + "/*/" + MoviesContract.REMOVE, REMOVE_HIGHEST_RATED_MOVIES_BY_ID);
 		return matcher;
 	}
@@ -164,6 +169,7 @@ public class MoviesProvider extends ContentProvider {
 		int rowsDeleted;
 		// this makes delete all rows return the number of rows deleted
 		if (null == selection) selection = "1";
+		Log.i(getClass().getSimpleName(), "match: " +  match);
 		switch (match) {
 			case MOVIES:
 				rowsDeleted = db.delete(
@@ -190,6 +196,14 @@ public class MoviesProvider extends ContentProvider {
 						HighestRatedEntry.TABLE_NAME, selection, selectionArgs);
 				break;
 			case REMOVE_MOST_POPULAR_MOVIES_BY_ID:
+				rowsDeleted = db.delete(
+						MostPopularEntry.TABLE_NAME, selection, selectionArgs);
+				break;
+			case REMOVE_HIGHEST_RATED_MOVIES:
+				rowsDeleted = db.delete(
+						HighestRatedEntry.TABLE_NAME, selection, selectionArgs);
+				break;
+			case REMOVE_MOST_POPULAR_MOVIES:
 				rowsDeleted = db.delete(
 						MostPopularEntry.TABLE_NAME, selection, selectionArgs);
 				break;
