@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Popular Movies</string>
     <string name="content_authority">com.example.popularmovies</string>
     <string name="hello_world">Hello world!</string>
@@ -10,4 +10,6 @@
     <string name="unknown_uri">Unknown uri: %s</string>
     <string name="popular">popular</string>
     <string name="top_rated">top_rated</string>
+    <string name="mark_as_favorite">mark as favorite</string>
+    <string name="favorite">favorite</string>
 </resources>

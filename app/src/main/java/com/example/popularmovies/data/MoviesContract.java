@@ -41,64 +41,20 @@ public class MoviesContract {
 		// Table name
 		public static final String TABLE_NAME = "favorites";
 
+		private static Builder buildUriWithFixedPath(String[] path) {
+			Builder contentUriBuilder = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES);
+			for (String pathItem : path) {
+				contentUriBuilder.appendPath(pathItem);
+			}
+			return contentUriBuilder;
+		}
+
 		public static Uri buildFavoritesById(long movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 
 		public static Uri removeFavoriteById(long movieId) {
-			return CONTENT_URI_BUILDER.appendPath(Long.valueOf(movieId).toString()).appendPath(REMOVE).build();
-		}
-	}
-
-	/* Inner class that defines the table contents of the most_popular table */
-	public static final class MostPopularEntry implements BaseColumns {
-
-		public static final String COLUMN_MOVIE_ID = "movie_id";
-		public static final String CONTENT_ITEM_TYPE =
-				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOST_POPULAR;
-		public static final String CONTENT_TYPE =
-				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOST_POPULAR;
-		public static final Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOST_POPULAR);
-		public static final Uri CONTENT_URI = CONTENT_URI_BUILDER.build();
-		// Table name
-		public static final String TABLE_NAME = "most_popular";
-
-		public static Uri buildMostPopularById(long movieId) {
-			return ContentUris.withAppendedId(CONTENT_URI, movieId);
-		}
-
-		public static Uri removeMostPopularById(long movieId) {
-			return CONTENT_URI_BUILDER.appendPath(Long.valueOf(movieId).toString()).appendPath(REMOVE).build();
-		}
-
-		public static Uri removeAllMostPopular() {
-			return BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOST_POPULAR).appendPath(REMOVE).build();
-		}
-	}
-
-	/* Inner class that defines the table contents of the highest_rated table */
-	public static final class HighestRatedEntry implements BaseColumns {
-
-		public static final String COLUMN_MOVIE_ID = "movie_id";
-		public static final String CONTENT_ITEM_TYPE =
-				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_HIGHEST_RATED;
-		public static final String CONTENT_TYPE =
-				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_HIGHEST_RATED;
-		public static final Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_HIGHEST_RATED);
-		public static final Uri CONTENT_URI = CONTENT_URI_BUILDER.build();
-		// Table name
-		public static final String TABLE_NAME = "highest_rated";
-
-		public static Uri buildHighestRatedById(long movieId) {
-			return ContentUris.withAppendedId(CONTENT_URI, movieId);
-		}
-
-		public static Uri removeHighestRatedById(long movieId) {
-			return CONTENT_URI_BUILDER.appendPath(Long.valueOf(movieId).toString()).appendPath(REMOVE).build();
-		}
-
-		public static Uri removeAllHighestRated() {
-			return BASE_CONTENT_URI.buildUpon().appendPath(PATH_HIGHEST_RATED).appendPath(REMOVE).build();
+			return buildUriWithFixedPath(new String[]{Long.valueOf(movieId).toString(), REMOVE}).build();
 		}
 	}
 
@@ -113,11 +69,11 @@ public class MoviesContract {
 		public static final String COLUMN_POPULARITY = "popularity";
 		public static final String COLUMN_POSTER_PATH = "poster_path";
 		public static final String COLUMN_RELEASE_DATE = "release_date";
+		public static final String COLUMN_SEARCH_CRITERIA = "search_criteria";
 		public static final String COLUMN_TITLE = "title";
 		public static final String COLUMN_VIDEO = "video";
 		public static final String COLUMN_VOTE_AVERAGE = "vote_average";
 		public static final String COLUMN_VOTE_COUNT = "vote_count";
-
 		public static final String CONTENT_ITEM_TYPE =
 				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
 		public static final String CONTENT_TYPE =
@@ -127,11 +83,25 @@ public class MoviesContract {
 				CONTENT_URI_BUILDER.build();
 		public static final String TABLE_NAME = "movies";
 
+		public static Uri buildFavoriteMovies() {
+			return buildUriWithFixedPath(PATH_FAVORITES);
+		}
+
+		public static Uri buildHighestRatedMovies() {
+			return buildUriWithFixedPath(PATH_HIGHEST_RATED);
+		}
+
+		public static Uri buildMostPopularMovies() {
+			return buildUriWithFixedPath(PATH_MOST_POPULAR);
+		}
+
 		public static Uri buildMovieById(long movieId) {
 			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
-		public static Uri buildFavoriteMovies() {
-			return CONTENT_URI_BUILDER.appendPath(PATH_FAVORITES).build();
+
+		private static Uri buildUriWithFixedPath(String path) {
+			Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES);
+			return CONTENT_URI_BUILDER.appendPath(path).build();
 		}
 	}
 
@@ -195,11 +165,13 @@ public class MoviesContract {
 	// as the ContentProvider hasn't been given any information on what to do with "givemeroot".
 	// At least, let's hope not.  Don't be that dev, reader.  Don't be that dev.
 	public static final String PATH_FAVORITES = "favorites";
+	public static final String PATH_HIGHEST_RATED = "highest_rated";
+	public static final String PATH_MOST_POPULAR = "most_popular";
 	public static final String PATH_MOVIES = "movies";
 	public static final String PATH_REVIEWS = "reviews";
 	public static final String PATH_VIDEOS = "videos";
-	public static final String PATH_MOST_POPULAR = "most_popular";
+	public static final String POPULAR = "popular";
 	public static final String REMOVE = "remove";
-	public static final String PATH_HIGHEST_RATED = "highest_rated";
+	public static final String TOP_RATED = "top_rated";
 
 }

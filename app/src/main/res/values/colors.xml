@@ -3,4 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="colorMovieDetailHeader">#009788</color>
+    <color name="white">#ffffff</color>
+    <color name="colorSkyBlue">#5BADC4</color>
 </resources>

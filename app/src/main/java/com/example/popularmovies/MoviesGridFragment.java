@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import com.example.popularmovies.businessobjects.MovieConstants;
 import com.example.popularmovies.data.MoviesContract;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
+import com.example.popularmovies.data.MoviesProvider;
 import com.example.popularmovies.service.FetchMoviesService;
 
 /**
@@ -78,7 +80,8 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 			MoviesContract.MoviesEntry.COLUMN_POPULARITY,
 			MoviesContract.MoviesEntry.COLUMN_VOTE_COUNT,
 			MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE,
-			MoviesContract.MoviesEntry.COLUMN_VIDEO
+			MoviesContract.MoviesEntry.COLUMN_VIDEO,
+			MoviesContract.MoviesEntry.COLUMN_SEARCH_CRITERIA
 	};
 	private static final int MOVIE_LOADER = 0;
 	private static final String SELECTED_KEY = "selected_position";
@@ -117,15 +120,14 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		// This is called when a new Loader needs to be created.  This
 		// fragment only uses one loader, so we don't care about checking the id.
-		// Sort order:  Ascending, by release date.
-		String sortOrder = MoviesEntry.COLUMN_RELEASE_DATE + " DESC";
-
+		Uri uri = Utility.getPreferredCriteria(getActivity()).equals(MoviesContract.TOP_RATED)?MoviesEntry.buildHighestRatedMovies():MoviesEntry.buildMostPopularMovies();
+		Log.i(getClass().getSimpleName(), String.format("preferred criteria: %s", uri.toString()));
 		return new CursorLoader(getActivity(),
-				MoviesEntry.CONTENT_URI,
+				uri,
 				MOVIE_COLUMNS,
-				null,
-				null,
-				sortOrder);
+				MoviesProvider.moviesSearchCriteriaSelection,
+				new String[]{Utility.getPreferredCriteria(getActivity())},
+				Utility.getPreferredCriteria(getActivity()).equals(MoviesContract.TOP_RATED)?MoviesProvider.ratingSortOrder:MoviesProvider.popularitySortOrder);
 	}
 
 	@Override

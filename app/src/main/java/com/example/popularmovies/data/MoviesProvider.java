@@ -15,8 +15,6 @@ import android.util.Log;
 import com.example.popularmovies.R;
 import com.example.popularmovies.Utility;
 import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
-import com.example.popularmovies.data.MoviesContract.HighestRatedEntry;
-import com.example.popularmovies.data.MoviesContract.MostPopularEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
@@ -41,10 +39,6 @@ public class MoviesProvider extends ContentProvider {
 	static final int FAVORITE_MOVIES = 306;
 	static final int MOST_POPULAR_MOVIES = 307;
 	static final int HIGHEST_RATED_MOVIES = 308;
-	static final int REMOVE_HIGHEST_RATED_MOVIES_BY_ID = 309;
-	static final int REMOVE_MOST_POPULAR_MOVIES_BY_ID = 310;
-	static final int REMOVE_HIGHEST_RATED_MOVIES = 311;
-	static final int REMOVE_MOST_POPULAR_MOVIES = 312;
 
 	private static final SQLiteQueryBuilder favoriteMoviesQueryBuilder;
 	//location.location_setting = ? AND date = ?
@@ -57,16 +51,19 @@ public class MoviesProvider extends ContentProvider {
 	private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;
 	private static final SQLiteQueryBuilder movieTrailersByMovieIdQueryBuilder;
 	//location.location_setting = ?
-	private static final String moviesEntryIDSelection =
+	private static final String favoritesEntryIDSelection =
+			FavoritesEntry.TABLE_NAME +
+					"." + FavoritesEntry.COLUMN_MOVIE_ID + " = ? ";
+	public static final String moviesSearchCriteriaSelection =
 			MoviesEntry.TABLE_NAME +
-					"." + MoviesEntry._ID + " = ? ";
+					"." + MoviesEntry.COLUMN_SEARCH_CRITERIA + " = ? ";
+	public static final String popularitySortOrder = MoviesEntry.COLUMN_POPULARITY + " DESC";
+	public static final String ratingSortOrder = MoviesEntry.COLUMN_VOTE_AVERAGE + " DESC";
 	private static final SQLiteQueryBuilder moviesQueryBuilder;
 	private static final SQLiteQueryBuilder reviewsQueryBuilder;
 	// The URI Matcher used by this content provider.
 	private static final UriMatcher sUriMatcher = buildUriMatcher();
 	private static final SQLiteQueryBuilder trailersQueryBuilder;
-	private static final SQLiteQueryBuilder mostPopularMoviesQueryBuilder;
-	private static final SQLiteQueryBuilder highestRatedMoviesQueryBuilder;
 
 	static {
 		movieTrailersByMovieIdQueryBuilder = new SQLiteQueryBuilder();
@@ -77,20 +74,11 @@ public class MoviesProvider extends ContentProvider {
 		favoritesQueryBuilder = new SQLiteQueryBuilder();
 		favoritesMovieIdSelectionQueryBuilder = new SQLiteQueryBuilder();
 		favoriteMoviesQueryBuilder = new SQLiteQueryBuilder();
-		mostPopularMoviesQueryBuilder = new SQLiteQueryBuilder();
-		highestRatedMoviesQueryBuilder = new SQLiteQueryBuilder();
 
 		favoriteMoviesQueryBuilder.setTables(
 				MoviesEntry.TABLE_NAME + " INNER JOIN " + FavoritesEntry.TABLE_NAME +
 						" ON " + MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = " + FavoritesEntry.TABLE_NAME + "." + FavoritesEntry.COLUMN_MOVIE_ID);
 
-		mostPopularMoviesQueryBuilder.setTables(
-				MoviesEntry.TABLE_NAME + " INNER JOIN " + MostPopularEntry.TABLE_NAME +
-						" ON " + MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = " + MostPopularEntry.TABLE_NAME + "." + MostPopularEntry.COLUMN_MOVIE_ID);
-
-		highestRatedMoviesQueryBuilder.setTables(
-				MoviesEntry.TABLE_NAME + " INNER JOIN " + HighestRatedEntry.TABLE_NAME +
-						" ON " + MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = " + HighestRatedEntry.TABLE_NAME + "." + HighestRatedEntry.COLUMN_MOVIE_ID);
 
 		moviesQueryBuilder.setTables(
 				MoviesContract.MoviesEntry.TABLE_NAME);
@@ -143,6 +131,8 @@ public class MoviesProvider extends ContentProvider {
 		// For each type of URI you want to add, create a corresponding code.
 		matcher.addURI(authority, MoviesContract.PATH_MOVIES, MOVIES);
 		matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/" + MoviesContract.PATH_FAVORITES, FAVORITE_MOVIES);
+		matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/" + MoviesContract.PATH_HIGHEST_RATED, HIGHEST_RATED_MOVIES);
+		matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/" + MoviesContract.PATH_MOST_POPULAR, MOST_POPULAR_MOVIES);
 		matcher.addURI(authority, MoviesContract.PATH_MOVIES + "/*", MOVIE_BY_ID);
 		matcher.addURI(authority, MoviesContract.PATH_REVIEWS + "/*", MOVIE_REVIEWS);
 		matcher.addURI(authority, MoviesContract.PATH_VIDEOS + "/*", MOVIE_TRAILERS);
@@ -151,12 +141,6 @@ public class MoviesProvider extends ContentProvider {
 		matcher.addURI(authority, MoviesContract.PATH_FAVORITES, FAVORITES);
 		matcher.addURI(authority, MoviesContract.PATH_FAVORITES + "/*", FAVORITE_BY_ID);
 		matcher.addURI(authority, MoviesContract.PATH_FAVORITES + "/*/" + MoviesContract.REMOVE, REMOVE_FAVORITE_BY_ID);
-		matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR, MOST_POPULAR_MOVIES);
-		matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR + "/" + MoviesContract.REMOVE, REMOVE_MOST_POPULAR_MOVIES);
-		matcher.addURI(authority, MoviesContract.PATH_MOST_POPULAR + "/*/" + MoviesContract.REMOVE, REMOVE_MOST_POPULAR_MOVIES_BY_ID);
-		matcher.addURI(authority, MoviesContract.PATH_HIGHEST_RATED, HIGHEST_RATED_MOVIES);
-		matcher.addURI(authority, MoviesContract.PATH_HIGHEST_RATED + "/" + MoviesContract.REMOVE, REMOVE_HIGHEST_RATED_MOVIES);
-		matcher.addURI(authority, MoviesContract.PATH_HIGHEST_RATED + "/*/" + MoviesContract.REMOVE, REMOVE_HIGHEST_RATED_MOVIES_BY_ID);
 		return matcher;
 	}
 
@@ -189,23 +173,7 @@ public class MoviesProvider extends ContentProvider {
 				break;
 			case REMOVE_FAVORITE_BY_ID:
 				rowsDeleted = db.delete(
-						FavoritesEntry.TABLE_NAME, selection, selectionArgs);
-				break;
-			case REMOVE_HIGHEST_RATED_MOVIES_BY_ID:
-				rowsDeleted = db.delete(
-						HighestRatedEntry.TABLE_NAME, selection, selectionArgs);
-				break;
-			case REMOVE_MOST_POPULAR_MOVIES_BY_ID:
-				rowsDeleted = db.delete(
-						MostPopularEntry.TABLE_NAME, selection, selectionArgs);
-				break;
-			case REMOVE_HIGHEST_RATED_MOVIES:
-				rowsDeleted = db.delete(
-						HighestRatedEntry.TABLE_NAME, selection, selectionArgs);
-				break;
-			case REMOVE_MOST_POPULAR_MOVIES:
-				rowsDeleted = db.delete(
-						MostPopularEntry.TABLE_NAME, selection, selectionArgs);
+						FavoritesEntry.TABLE_NAME, favoritesMovieIdSelection, new String[]{uri.getLastPathSegment()});
 				break;
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -277,26 +245,26 @@ public class MoviesProvider extends ContentProvider {
 		);
 	}
 
+
 	private Cursor getMostPopularMovies() {
-		return mostPopularMoviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+		return moviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				null,
+				moviesSearchCriteriaSelection,
+				new String[]{MoviesContract.POPULAR},
 				null,
 				null,
-				null,
-				null,
-				null,
-				null
+				popularitySortOrder
 		);
 	}
 
-
 	private Cursor getHighestRatedMovies() {
-		return highestRatedMoviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+		return moviesQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				null,
+				moviesSearchCriteriaSelection,
+				new String[]{MoviesContract.TOP_RATED},
 				null,
 				null,
-				null,
-				null,
-				null,
-				null
+				ratingSortOrder
 		);
 	}
 
@@ -405,18 +373,10 @@ public class MoviesProvider extends ContentProvider {
 					throw new android.database.SQLException(formatFailedToInsertMessage(uri));
 				break;
 			}
-			case MOST_POPULAR_MOVIES: {
-				long _id = db.replace(MostPopularEntry.TABLE_NAME, null, values);
+			case FAVORITE_BY_ID: {
+				long _id = db.replace(FavoritesEntry.TABLE_NAME, null, values);
 				if (_id > 0)
-					returnUri = MostPopularEntry.buildMostPopularById(_id);
-				else
-					throw new android.database.SQLException(formatFailedToInsertMessage(uri));
-				break;
-			}
-			case HIGHEST_RATED_MOVIES: {
-				long _id = db.replace(HighestRatedEntry.TABLE_NAME, null, values);
-				if (_id > 0)
-					returnUri = HighestRatedEntry.buildHighestRatedById(_id);
+					returnUri = FavoritesEntry.buildFavoritesById(_id);
 				else
 					throw new android.database.SQLException(formatFailedToInsertMessage(uri));
 				break;
@@ -501,12 +461,6 @@ public class MoviesProvider extends ContentProvider {
 				break;
 			case FAVORITES:
 				rowsUpdated = db.update(FavoritesEntry.TABLE_NAME, values, selection, selectionArgs);
-				break;
-			case MOST_POPULAR_MOVIES:
-				rowsUpdated = db.update(MostPopularEntry.TABLE_NAME, values, selection, selectionArgs);
-				break;
-			case HIGHEST_RATED_MOVIES:
-				rowsUpdated = db.update(HighestRatedEntry.TABLE_NAME, values, selection, selectionArgs);
 				break;
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);

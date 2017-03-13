@@ -17,12 +17,8 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.example.popularmovies.BuildConfig;
-import com.example.popularmovies.R;
-import com.example.popularmovies.Utility;
 import com.example.popularmovies.businessobjects.MovieInfo;
 import com.example.popularmovies.data.MoviesContract;
-import com.example.popularmovies.data.MoviesContract.HighestRatedEntry;
-import com.example.popularmovies.data.MoviesContract.MostPopularEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 
 import org.json.JSONArray;
@@ -122,15 +118,13 @@ public class FetchMoviesService extends IntentService {
 				Log.d(TAG, "Stream was empty");
 			}
 			moviesJsonString = buffer.toString();
+			Log.i(TAG, String.format("moviesJsonString: %s", moviesJsonString));
 			movieInfos = formatJson(moviesJsonString);
-			Vector<ContentValues> cVVector = new Vector<ContentValues>(movieInfos.size());
-			Vector<ContentValues> referenceVector = new Vector<ContentValues>(movieInfos.size());
+			Vector<ContentValues> cVVector = new Vector<>(movieInfos.size());
 			List<String> ids = new ArrayList<>();
 			for (MovieInfo movieInfo : movieInfos) {
 				ContentValues movieValues = new ContentValues();
-				ContentValues movieReferenceValues = new ContentValues();
 				ids.add(movieInfo.getId() + "");
-				movieReferenceValues.put(MostPopularEntry.COLUMN_MOVIE_ID, movieInfo.getId());
 				movieValues.put(MoviesContract.MoviesEntry._ID, movieInfo.getId());
 				movieValues.put(MoviesContract.MoviesEntry.COLUMN_ADULT, 0);
 				movieValues.put(MoviesContract.MoviesEntry.COLUMN_BACKDROP_PATH, movieInfo.getBackdropPath());
@@ -144,29 +138,19 @@ public class FetchMoviesService extends IntentService {
 				movieValues.put(MoviesContract.MoviesEntry.COLUMN_VIDEO, 0);
 				movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, movieInfo.getVoteAverage());
 				movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_COUNT, movieInfo.getVoteCount());
+				movieValues.put(MoviesEntry.COLUMN_SEARCH_CRITERIA, criteria);
 
 				cVVector.add(movieValues);
-				referenceVector.add(movieReferenceValues);
 			}
 
-			int rowsDeleted = getApplicationContext().getContentResolver().delete(MoviesEntry.CONTENT_URI, Utility.createMovieIdSelection(ids), ids.toArray(new String[ids.size()]));
-			Log.d(TAG, "FetchMoviesTask before update. " + rowsDeleted + " rows deleted from " + MoviesEntry.TABLE_NAME );
-			int referenceRowsDeleted = getApplicationContext().getContentResolver().delete(Utility.determineDeleteUriBasedOnCriteria(criteria), null, null);
-			Log.d(TAG, "FetchMoviesTask before update. " + referenceRowsDeleted + " rows deleted from " + Utility.determineTableBasedOnCriteria(criteria) );
-
 			int inserted = 0;
-			int referenceRecordsInserted = 0;
 			// add to database
 			if (cVVector.size() > 0) {
 				ContentValues[] cvArray = new ContentValues[cVVector.size()];
 				cVVector.toArray(cvArray);
-				ContentValues[] referenceArray = new ContentValues[referenceVector.size()];
-				referenceVector.toArray(referenceArray);
 				inserted = getApplicationContext().getContentResolver().bulkInsert(MoviesContract.MoviesEntry.CONTENT_URI, cvArray);
-				referenceRecordsInserted = getApplicationContext().getContentResolver().bulkInsert(Utility.determineContentUriBasedOnCriteria(criteria), referenceArray);
 			}
 			Log.d(TAG, "FetchMoviesTask Complete. " + inserted + " inserted into " + MoviesEntry.TABLE_NAME);
-			Log.d(TAG, "FetchMoviesTask Complete. " + inserted + " inserted into " +  Utility.determineTableBasedOnCriteria(criteria));
 
 		} catch (JSONException e) {
 			Log.e(TAG, String.format("JSONException Error e: %s", e.getMessage()), e);
@@ -187,7 +171,6 @@ public class FetchMoviesService extends IntentService {
 		}
 		return;
 	}
-
 
 	protected void populateGenreIds(String GENRE_IDS, JSONObject movieInfoJsonObject, MovieInfo movieInfo) throws JSONException {
 		JSONArray jsonArray = movieInfoJsonObject.getJSONArray(GENRE_IDS);
