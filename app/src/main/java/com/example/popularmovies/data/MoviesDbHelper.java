@@ -31,7 +31,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
 	static final String DATABASE_NAME = "movies.db";
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 6;
+	private static final int DATABASE_VERSION = 8;
 
 	public MoviesDbHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -66,12 +66,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 
 		// Create a table to hold reviews
 		final String SQL_CREATE_FAVORITES_TABLE = "CREATE TABLE " + FavoritesEntry.TABLE_NAME + " (" +
-				FavoritesEntry._ID + " TEXT PRIMARY KEY," +
-				FavoritesEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
-				FavoritesEntry.COLUMN_FAVORITE + " BOOLEAN NOT NULL, " +
-				// Set up the location column as a foreign key to location table.
-				" FOREIGN KEY (" + FavoritesEntry.COLUMN_MOVIE_ID + ") REFERENCES " +
-				MoviesEntry.TABLE_NAME + " (" + MoviesEntry._ID + "));";
+				FavoritesEntry._ID + " TEXT PRIMARY KEY);";
 
 		final String SQL_CREATE_MOVIES_TABLE = "CREATE TABLE " + MoviesEntry.TABLE_NAME + " (" +
 				// Why AutoIncrement here, and not above?

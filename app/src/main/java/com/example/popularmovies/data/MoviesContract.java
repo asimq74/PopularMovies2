@@ -29,8 +29,6 @@ public class MoviesContract {
 	/* Inner class that defines the table contents of the favorites table */
 	public static final class FavoritesEntry implements BaseColumns {
 
-		public static final String COLUMN_FAVORITE = "favorite";
-		public static final String COLUMN_MOVIE_ID = "movie_id";
 		public static final String CONTENT_ITEM_TYPE =
 				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
 		public static final String CONTENT_TYPE =

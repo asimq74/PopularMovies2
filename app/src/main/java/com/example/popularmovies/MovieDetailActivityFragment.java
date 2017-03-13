@@ -134,10 +134,10 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 					Button button = (Button) view;
 					final String lastPathSegment = mUri.getLastPathSegment();
 					final long movieId = Long.parseLong(lastPathSegment);
+					final ContentValues favoritesValues = Utility.createFavoritesValues(lastPathSegment);
 					if (button.getText().equals(getString(R.string.mark_as_favorite))) {
 						view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorSkyBlue));
 						button.setText(getString(R.string.favorite));
-						final ContentValues favoritesValues = Utility.createFavoritesValues(lastPathSegment, true);
 						Uri returnUri = getContext().getContentResolver().insert(FavoritesEntry.buildFavoritesById(movieId), favoritesValues);
 						Log.d(TAG, String.format("Insert into favorites Complete. %s %s", favoritesValues, returnUri));
 					} else {

@@ -1,10 +1,14 @@
 package com.example.popularmovies;
 
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -18,11 +22,24 @@ public class Utility {
 
 	private static final String TAG = Utility.class.getSimpleName();
 
-	public static ContentValues createFavoritesValues(String movieId, boolean favorite) {
+	static void validateCursor(Cursor valueCursor, ContentValues expectedValues) {
+		valueCursor.moveToFirst();
+		validateCurrentRecord(valueCursor, expectedValues);
+		valueCursor.close();
+	}
+
+	static void validateCurrentRecord(Cursor valueCursor, ContentValues expectedValues) {
+		Set<Entry<String, Object>> valueSet = expectedValues.valueSet();
+		for (Map.Entry<String, Object> entry : valueSet) {
+			String columnName = entry.getKey();
+			int idx = valueCursor.getColumnIndex(columnName);
+			Log.i(TAG, String.format("%s = %s", columnName, valueCursor.getString(idx)));
+		}
+	}
+
+	public static ContentValues createFavoritesValues(String movieId) {
 		ContentValues favoriteValues = new ContentValues();
-		favoriteValues.put(FavoritesEntry._ID, UUID.randomUUID().toString());
-		favoriteValues.put(FavoritesEntry.COLUMN_MOVIE_ID, movieId);
-		favoriteValues.put(FavoritesEntry.COLUMN_FAVORITE, favorite ? 1 : 0);
+		favoriteValues.put(FavoritesEntry._ID, movieId);
 		return favoriteValues;
 	}
 

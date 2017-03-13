@@ -43,17 +43,14 @@ public class MoviesProvider extends ContentProvider {
 	private static final SQLiteQueryBuilder favoriteMoviesQueryBuilder;
 	//location.location_setting = ? AND date = ?
 	public static final String favoritesMovieIdSelection =
-			FavoritesEntry.TABLE_NAME + "." + FavoritesEntry.COLUMN_MOVIE_ID + " = ?";
+			FavoritesEntry.TABLE_NAME + "." + FavoritesEntry._ID + " = ?";
 	public static final String moviesIdSelection =
 			MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = ?";
 	private static final SQLiteQueryBuilder favoritesMovieIdSelectionQueryBuilder;
 	private static final SQLiteQueryBuilder favoritesQueryBuilder;
 	private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;
 	private static final SQLiteQueryBuilder movieTrailersByMovieIdQueryBuilder;
-	//location.location_setting = ?
-	private static final String favoritesEntryIDSelection =
-			FavoritesEntry.TABLE_NAME +
-					"." + FavoritesEntry.COLUMN_MOVIE_ID + " = ? ";
+
 	public static final String moviesSearchCriteriaSelection =
 			MoviesEntry.TABLE_NAME +
 					"." + MoviesEntry.COLUMN_SEARCH_CRITERIA + " = ? ";
@@ -77,7 +74,7 @@ public class MoviesProvider extends ContentProvider {
 
 		favoriteMoviesQueryBuilder.setTables(
 				MoviesEntry.TABLE_NAME + " INNER JOIN " + FavoritesEntry.TABLE_NAME +
-						" ON " + MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = " + FavoritesEntry.TABLE_NAME + "." + FavoritesEntry.COLUMN_MOVIE_ID);
+						" ON " + MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = " + FavoritesEntry.TABLE_NAME + "." + FavoritesEntry._ID);
 
 
 		moviesQueryBuilder.setTables(
@@ -173,7 +170,7 @@ public class MoviesProvider extends ContentProvider {
 				break;
 			case REMOVE_FAVORITE_BY_ID:
 				rowsDeleted = db.delete(
-						FavoritesEntry.TABLE_NAME, favoritesMovieIdSelection, new String[]{uri.getLastPathSegment()});
+						FavoritesEntry.TABLE_NAME, favoritesMovieIdSelection, new String[]{uri.getPathSegments().get(uri.getPathSegments().size() - 2)});
 				break;
 			default:
 				throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -200,11 +197,11 @@ public class MoviesProvider extends ContentProvider {
 		return formatString(R.string.unknown_uri, uri);
 	}
 
-	private Cursor getFavoriteById(String movieId) {
+	private Cursor getFavoriteById(Uri uri) {
 		return favoritesMovieIdSelectionQueryBuilder.query(mOpenHelper.getReadableDatabase(),
 				null,
 				favoritesMovieIdSelection,
-				new String[]{movieId},
+				new String[]{uri.getLastPathSegment()},
 				null,
 				null,
 				null
@@ -375,8 +372,10 @@ public class MoviesProvider extends ContentProvider {
 			}
 			case FAVORITE_BY_ID: {
 				long _id = db.replace(FavoritesEntry.TABLE_NAME, null, values);
-				if (_id > 0)
+				if (_id > 0) {
+					Log.i(getClass().getSimpleName(), String.format("FavoritesEntry.buildFavoritesById(_id) %s", FavoritesEntry.buildFavoritesById(_id)));
 					returnUri = FavoritesEntry.buildFavoritesById(_id);
+				}
 				else
 					throw new android.database.SQLException(formatFailedToInsertMessage(uri));
 				break;
@@ -416,7 +415,7 @@ public class MoviesProvider extends ContentProvider {
 				break;
 			}
 			case FAVORITE_BY_ID: {
-				retCursor = getFavoriteById(selectionArgs[0]);
+				retCursor = getFavoriteById(uri);
 				break;
 			}
 			case FAVORITE_MOVIES: {
