@@ -1,9 +1,6 @@
 package com.example.popularmovies;
 
-import java.util.UUID;
-
 import android.content.ContentValues;
-import android.content.res.Resources.Theme;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -128,12 +125,12 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 			overviewView.setText(data.getString(COL_OVERVIEW));
 			ratingView.setText(String.format("%s/10", data.getFloat(COL_VOTE_AVERAGE)));
 			releaseDateView.setText(Utility.getYear(data.getString(COL_RELEASE_DATE)));
+			final String lastPathSegment = mUri.getLastPathSegment();
+			final long movieId = Long.parseLong(lastPathSegment);
 			markAsFavoriteButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
 					Button button = (Button) view;
-					final String lastPathSegment = mUri.getLastPathSegment();
-					final long movieId = Long.parseLong(lastPathSegment);
 					final ContentValues favoritesValues = Utility.createFavoritesValues(lastPathSegment);
 					if (button.getText().equals(getString(R.string.mark_as_favorite))) {
 						view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorSkyBlue));
@@ -148,6 +145,8 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 					}
 				}
 			});
+			Cursor cursor = getContext().getContentResolver().query(MoviesContract.ReviewsEntry.buildReviewsById(movieId), null, null, null, null);
+			Log.d(TAG, String.format("review count: %s", cursor.getCount()));
 		}
 	}
 

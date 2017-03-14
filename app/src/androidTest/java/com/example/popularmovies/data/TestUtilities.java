@@ -179,8 +179,6 @@ public class TestUtilities extends AndroidTestCase {
 	public static ContentValues createFavoritesTestValues() {
 		ContentValues favoriteValues = new ContentValues();
 		favoriteValues.put(FavoritesEntry._ID, "57992d84c3a3687e5c003a3b");
-		favoriteValues.put(FavoritesEntry.COLUMN_MOVIE_ID, TEST_ID);
-		favoriteValues.put(FavoritesEntry.COLUMN_FAVORITE, 1);
 		return favoriteValues;
 	}
 

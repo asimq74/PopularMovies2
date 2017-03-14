@@ -244,7 +244,7 @@ public class TestDb extends AndroidTestCase {
 	}
 
 	public void testDeleteFavoritesColumnFromTable() {
-		deleteRow(FavoritesEntry.TABLE_NAME, FavoritesEntry.COLUMN_MOVIE_ID + "=?", new String[]{String.valueOf(TestUtilities.TEST_ID)});
+		deleteRow(FavoritesEntry.TABLE_NAME, FavoritesEntry._ID + "=?", new String[]{String.valueOf(TestUtilities.TEST_ID)});
 	}
 
 	protected void validateCurrentRecord(Cursor valueCursor, ContentValues expectedValues) {

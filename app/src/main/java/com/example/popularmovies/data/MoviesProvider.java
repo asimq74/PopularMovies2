@@ -6,14 +6,12 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
-import android.graphics.Movie;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.popularmovies.R;
-import com.example.popularmovies.Utility;
 import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
@@ -46,6 +44,8 @@ public class MoviesProvider extends ContentProvider {
 			FavoritesEntry.TABLE_NAME + "." + FavoritesEntry._ID + " = ?";
 	public static final String moviesIdSelection =
 			MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = ?";
+	public static final String reviewsIdSelection =
+			ReviewsEntry.TABLE_NAME + "." + ReviewsEntry._ID + " = ?";
 	private static final SQLiteQueryBuilder favoritesMovieIdSelectionQueryBuilder;
 	private static final SQLiteQueryBuilder favoritesQueryBuilder;
 	private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;
@@ -276,11 +276,11 @@ public class MoviesProvider extends ContentProvider {
 		);
 	}
 
-	private Cursor getReviews() {
+	private Cursor getReviews(Uri uri) {
 		return reviewsQueryBuilder.query(mOpenHelper.getReadableDatabase(),
 				null,
-				null,
-				null,
+				reviewsIdSelection,
+				new String[]{uri.getLastPathSegment()},
 				null,
 				null,
 				null
@@ -403,7 +403,11 @@ public class MoviesProvider extends ContentProvider {
 				break;
 			}
 			case REVIEWS: {
-				retCursor = getReviews();
+				retCursor = getReviews(uri);
+				break;
+			}
+			case MOVIE_REVIEWS: {
+				retCursor = getReviews(uri);
 				break;
 			}
 			case TRAILERS: {
