@@ -45,7 +45,7 @@ public class MoviesProvider extends ContentProvider {
 	public static final String moviesIdSelection =
 			MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = ?";
 	public static final String reviewsIdSelection =
-			ReviewsEntry.TABLE_NAME + "." + ReviewsEntry._ID + " = ?";
+			ReviewsEntry.TABLE_NAME + "." + ReviewsEntry.COLUMN_MOVIE_ID + " = ?";
 	private static final SQLiteQueryBuilder favoritesMovieIdSelectionQueryBuilder;
 	private static final SQLiteQueryBuilder favoritesQueryBuilder;
 	private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;

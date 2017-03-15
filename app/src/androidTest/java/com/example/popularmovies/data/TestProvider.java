@@ -261,7 +261,8 @@ public class TestProvider extends AndroidTestCase {
 	}
 
 	public void testBasicReviewsQuery() {
-		testBasicQuery(ReviewsEntry.TABLE_NAME, ReviewsEntry.CONTENT_URI, TestUtilities.createReviewTestValues());
+		final ContentValues reviewTestValues = TestUtilities.createReviewTestValues();
+		testBasicQuery(ReviewsEntry.TABLE_NAME, ReviewsEntry.buildReviewsById(TestUtilities.TEST_ID), reviewTestValues);
 	}
 
 	public void testBasicTrailersQuery() {

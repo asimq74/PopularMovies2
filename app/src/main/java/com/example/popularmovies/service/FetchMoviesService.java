@@ -1,5 +1,7 @@
 package com.example.popularmovies.service;
 
+import java.util.List;
+
 import android.app.IntentService;
 import android.content.Intent;
 
@@ -20,8 +22,12 @@ public class FetchMoviesService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String criteria = intent.getStringExtra(SEARCH_CRITERIA_EXTRA);
-        RetrieveMovieInfoApi<MovieInfo> retrieveMoviesHandler = new RetrieveMovies(getApplicationContext());
-        retrieveMoviesHandler.retrieveMovieInformation(criteria);
+        RetrieveMovieInfoApi<MovieInfo, List<String>> retrieveMoviesHandler = new MovieInfoRetriever(getApplicationContext());
+        List<String> movieIds = retrieveMoviesHandler.retrieveMovieInformation(criteria);
+        MovieReviewsRetriever reviewsHandler = new MovieReviewsRetriever(getApplicationContext());
+        for (String movieId : movieIds) {
+            List<String> reviewIds = reviewsHandler.retrieveMovieInformation(movieId);
+        }
     }
 
 }

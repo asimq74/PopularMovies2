@@ -2,6 +2,7 @@ package com.example.popularmovies;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,12 +17,15 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.popularmovies.businessobjects.MovieConstants;
 import com.example.popularmovies.data.MoviesContract;
 import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
+import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -68,14 +72,14 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 			MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE,
 			MoviesContract.MoviesEntry.COLUMN_VIDEO
 	};
+	final String TAG = this.getClass().getSimpleName();
 	private Uri mUri;
-	private int movieId = 0;
+	private Button markAsFavoriteButton;
 	private ImageView movieThumbnailView;
 	private TextView movieTitleView;
 	private TextView overviewView;
 	private TextView ratingView;
 	private TextView releaseDateView;
-	private Button markAsFavoriteButton;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -111,8 +115,6 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 		return rootView;
 	}
 
-
-
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		if (data != null && data.moveToFirst()) {
@@ -146,11 +148,12 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 				}
 			});
 			Cursor cursor = getContext().getContentResolver().query(MoviesContract.ReviewsEntry.buildReviewsById(movieId), null, null, null, null);
-			Log.d(TAG, String.format("review count: %s", cursor.getCount()));
+			Log.d(TAG, String.format("review count: %s for movie_id: %s", cursor.getCount(), lastPathSegment));
+			while (cursor.moveToNext()) {
+				Log.d(TAG, String.format("review content: %s", cursor.getString(cursor.getColumnIndex(ReviewsEntry.COLUMN_CONTENT))));
+			}
 		}
 	}
-
-	final String TAG = this.getClass().getSimpleName();
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {

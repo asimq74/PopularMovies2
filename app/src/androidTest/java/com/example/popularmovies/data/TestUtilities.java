@@ -127,6 +127,7 @@ public class TestUtilities extends AndroidTestCase {
 		movieValues.put(MoviesEntry.COLUMN_VIDEO, 0);
 		movieValues.put(MoviesEntry.COLUMN_VOTE_AVERAGE, 7);
 		movieValues.put(MoviesEntry.COLUMN_VOTE_COUNT, 536);
+		movieValues.put(MoviesEntry.COLUMN_SEARCH_CRITERIA, "popular");
 		return movieValues;
 	}
 

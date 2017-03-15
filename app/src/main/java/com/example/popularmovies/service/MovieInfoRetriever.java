@@ -27,12 +27,12 @@ import java.util.Vector;
  * Created by asimqureshi on 3/14/17.
  */
 
-public class RetrieveMovies implements RetrieveMovieInfoApi<MovieInfo> {
+public class MovieInfoRetriever implements RetrieveMovieInfoApi<MovieInfo, List<String>> {
 
     private final Context context;
     final String TAG = this.getClass().getSimpleName();
 
-    public RetrieveMovies(Context context) {
+    public MovieInfoRetriever(Context context) {
         this.context = context;
     }
 
@@ -104,12 +104,12 @@ public class RetrieveMovies implements RetrieveMovieInfoApi<MovieInfo> {
     }
 
     @Override
-    public void retrieveMovieInformation(String criteria) {
+    public List<String> retrieveMovieInformation(String criteria) {
         List<MovieInfo> movieInfos = new ArrayList<>();
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String moviesJsonString;
-
+        List<String> ids = new ArrayList<>();
         try {
             Uri.Builder builder = createUriBuilder(criteria);
 
@@ -135,7 +135,6 @@ public class RetrieveMovies implements RetrieveMovieInfoApi<MovieInfo> {
             Log.i(TAG, String.format("moviesJsonString: %s", moviesJsonString));
             movieInfos = formatJson(moviesJsonString);
             Vector<ContentValues> cVVector = new Vector<>(movieInfos.size());
-            List<String> ids = new ArrayList<>();
             for (MovieInfo movieInfo : movieInfos) {
                 ContentValues movieValues = new ContentValues();
                 ids.add(movieInfo.getId() + "");
@@ -183,6 +182,6 @@ public class RetrieveMovies implements RetrieveMovieInfoApi<MovieInfo> {
                 }
             }
         }
-        return;
+        return ids;
     }
 }

@@ -10,11 +10,11 @@ import java.util.List;
  * Created by asimqureshi on 3/14/17.
  */
 
-public interface RetrieveMovieInfoApi<I> {
+public interface RetrieveMovieInfoApi<I, O> {
 
     Uri.Builder createUriBuilder(String criteria);
 
     List<I> formatJson(String json) throws JSONException;
 
-    void retrieveMovieInformation(String criteria);
+    O retrieveMovieInformation(String criteria);
 }
