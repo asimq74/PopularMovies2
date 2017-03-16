@@ -26,10 +26,6 @@ public class ReviewsAdapter extends CursorAdapter {
 			urlView = (TextView) view.findViewById(R.id.url);
 		}
 
-		@Override
-		public String toString() {
-			return super.toString() + " '" + contentView.getText() + "'";
-		}
 	}
 
 	public ReviewsAdapter(Context context, Cursor c, int flags) {

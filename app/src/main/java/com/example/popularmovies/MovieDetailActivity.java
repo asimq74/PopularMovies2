@@ -23,9 +23,9 @@ public class MovieDetailActivity extends ActionBarActivity {
 				getSupportFragmentManager().beginTransaction().add(R.id.fragment,
 						new MovieDetailActivityFragment()).commit();
 			}
-			final Fragment reviewsFragment = getSupportFragmentManager().findFragmentById(R.id.movies_grid_fragment);
+			final Fragment reviewsFragment = getSupportFragmentManager().findFragmentById(R.id.movie_reviews_fragment);
 			if (reviewsFragment == null || !(reviewsFragment instanceof MoviesGridFragment)) {
-				getSupportFragmentManager().beginTransaction().add(R.id.movies_grid_fragment,
+				getSupportFragmentManager().beginTransaction().add(R.id.movie_reviews_fragment,
 						new MoviesGridFragment()).commit();
 			}
 

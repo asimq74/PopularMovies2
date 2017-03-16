@@ -46,6 +46,7 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 		 */
 		public void onItemSelected(Uri detailUri);
 	}
+
 	static final int COL_ADULT = 1;
 	static final int COL_BACKDROP_PATH = 8;
 	static final int COL_FAVORITE = 12;
@@ -89,6 +90,7 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 	public static MoviesGridFragment newInstance() {
 		return new MoviesGridFragment();
 	}
+
 	private GridView gridView;
 	private int mPosition = GridView.INVALID_POSITION;
 	/**
@@ -120,14 +122,14 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 		// This is called when a new Loader needs to be created.  This
 		// fragment only uses one loader, so we don't care about checking the id.
-		Uri uri = Utility.getPreferredCriteria(getActivity()).equals(MoviesContract.TOP_RATED)?MoviesEntry.buildHighestRatedMovies():MoviesEntry.buildMostPopularMovies();
+		Uri uri = Utility.getPreferredCriteria(getActivity()).equals(MoviesContract.TOP_RATED) ? MoviesEntry.buildHighestRatedMovies() : MoviesEntry.buildMostPopularMovies();
 		Log.i(getClass().getSimpleName(), String.format("preferred criteria: %s", uri.toString()));
 		return new CursorLoader(getActivity(),
 				uri,
 				MOVIE_COLUMNS,
 				MoviesProvider.moviesSearchCriteriaSelection,
 				new String[]{Utility.getPreferredCriteria(getActivity())},
-				Utility.getPreferredCriteria(getActivity()).equals(MoviesContract.TOP_RATED)?MoviesProvider.ratingSortOrder:MoviesProvider.popularitySortOrder);
+				Utility.getPreferredCriteria(getActivity()).equals(MoviesContract.TOP_RATED) ? MoviesProvider.ratingSortOrder : MoviesProvider.popularitySortOrder);
 	}
 
 	@Override

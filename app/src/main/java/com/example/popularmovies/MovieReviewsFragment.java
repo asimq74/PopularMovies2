@@ -7,11 +7,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TextView;
 
+import com.example.popularmovies.ReviewsAdapter.ViewHolder;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 
 /**
@@ -20,11 +26,15 @@ import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
  */
 public class MovieReviewsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+	private static final int REVIEWS_LOADER = 0;
 	final String TAG = this.getClass().getSimpleName();
-	private ListView mListView;
-	private int mPosition = ListView.INVALID_POSITION;
 	private Uri mUri;
-	private ReviewsAdapter reviewsAdapter;
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		getLoaderManager().initLoader(REVIEWS_LOADER, null, this);
+		super.onActivityCreated(savedInstanceState);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,30 +62,55 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-
-		reviewsAdapter = new ReviewsAdapter(getActivity(), null, 0);
-
-		View view = inflater.inflate(R.layout.fragment_review_list, container, false);
-		// Get a reference to the ListView, and attach this adapter to it.
-		mListView = (ListView) view.findViewById(R.id.reviewsList);
-		mListView.setAdapter(reviewsAdapter);
-
+		View view = inflater.inflate(R.layout.fragment_review_layout, container, false);
 		return view;
+	}
+
+	public class ViewHolder extends RecyclerView.ViewHolder {
+
+		public final TextView authorView;
+		public final TextView contentView;
+		public final TextView urlView;
+
+		public ViewHolder(View view) {
+			super(view);
+			authorView = (TextView) view.findViewById(R.id.author);
+			contentView = (TextView) view.findViewById(R.id.content);
+			urlView = (TextView) view.findViewById(R.id.url);
+		}
+
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		reviewsAdapter.swapCursor(data);
-		if (mPosition != ListView.INVALID_POSITION) {
-			// If we don't need to restart the loader, and there's a desired position to restore
-			// to, do so now.
-			mListView.smoothScrollToPosition(mPosition);
+		TextView authorView;
+		TextView contentView;
+		TextView urlView;
+		data.moveToFirst();
+		final LinearLayout reviewsLayout = (LinearLayout) getView();
+		reviewsLayout.removeAllViews();
+		if (data == null && !data.moveToFirst()) {
+			return;
 		}
+		Log.d(TAG, String.format("review count: %s for movie_id: %s", data.getCount(), mUri.getLastPathSegment()));
+		if (data.moveToFirst()) {
+			do {
+				View reviewDataView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_review, reviewsLayout, false);
+				authorView = (TextView) reviewDataView.findViewById(R.id.author);
+				contentView = (TextView) reviewDataView.findViewById(R.id.content);
+				urlView = (TextView) reviewDataView.findViewById(R.id.url);
+				Log.i(TAG, String.format("content %s", data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_CONTENT))));
+				contentView.setText(data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_CONTENT)));
+				authorView.setText(data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_AUTHOR)));
+				urlView.setText(data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_URL)));
+				reviewsLayout.addView(reviewDataView);
+			} while (data.moveToNext());
+		}
+		data.close();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
-		reviewsAdapter.swapCursor(null);
 	}
 
 }
