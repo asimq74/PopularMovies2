@@ -28,6 +28,11 @@ public class MovieDetailActivity extends ActionBarActivity {
 				getSupportFragmentManager().beginTransaction().add(R.id.movie_reviews_fragment,
 						new MovieReviewsFragment()).commit();
 			}
+			final Fragment trailersFragment = getSupportFragmentManager().findFragmentById(R.id.movie_trailers_fragment);
+			if (trailersFragment == null || !(trailersFragment instanceof MovieTrailersFragment)) {
+				getSupportFragmentManager().beginTransaction().add(R.id.movie_trailers_fragment,
+						new MovieTrailersFragment()).commit();
+			}
 		}
 	}
 

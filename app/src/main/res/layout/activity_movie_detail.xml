@@ -23,7 +23,14 @@
             android:name="com.example.popularmovies.MovieReviewsFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_review_layout"/>
+            tools:layout="@layout/fragment_section_layout"/>
+
+        <fragment
+            android:id="@+id/movie_trailers_fragment"
+            android:name="com.example.popularmovies.MovieTrailersFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_section_layout"/>
 
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

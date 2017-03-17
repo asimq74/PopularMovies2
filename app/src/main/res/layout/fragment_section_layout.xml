@@ -20,7 +20,7 @@
         android:textStyle="bold"/>
 
     <LinearLayout
-        android:id="@+id/reviewsLayout"
+        android:id="@+id/sectionLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"/>
