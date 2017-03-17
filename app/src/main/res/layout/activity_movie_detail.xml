@@ -25,6 +25,5 @@
             android:layout_height="wrap_content"
             tools:layout="@layout/fragment_review_layout"/>
 
-
     </LinearLayout>
 </android.support.v4.widget.NestedScrollView>

@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
@@ -231,8 +232,10 @@ public class TestDb extends AndroidTestCase {
 		insertRow(MoviesEntry.TABLE_NAME, TestUtilities.createMoviesTestValues());
 	}
 
-	public void testReviewsTable() {
-		insertRow(ReviewsEntry.TABLE_NAME, TestUtilities.createReviewTestValues());
+	public void testReviewsTables() {
+		for (ContentValues contentValues : TestUtilities.createMultipleReviewTestValues()) {
+			insertRow(ReviewsEntry.TABLE_NAME, contentValues);
+		}
 	}
 
 	public void testVideosTable() {

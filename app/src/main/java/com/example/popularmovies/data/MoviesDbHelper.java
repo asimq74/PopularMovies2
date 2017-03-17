@@ -43,7 +43,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 		// Create a table to hold videos
 		final String SQL_CREATE_VIDEOS_TABLE = "CREATE TABLE " + VideosEntry.TABLE_NAME + " (" +
 				VideosEntry._ID + " TEXT PRIMARY KEY," +
-				VideosEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
+				VideosEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
 				VideosEntry.COLUMN_NAME + " TEXT NOT NULL, " +
 				VideosEntry.COLUMN_SITE + " TEXT NOT NULL, " +
 				VideosEntry.COLUMN_SIZE + " INTEGER NOT NULL, " +
@@ -56,7 +56,7 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
 		// Create a table to hold reviews
 		final String SQL_CREATE_REVIEWS_TABLE = "CREATE TABLE " + ReviewsEntry.TABLE_NAME + " (" +
 				ReviewsEntry._ID + " TEXT PRIMARY KEY," +
-				ReviewsEntry.COLUMN_MOVIE_ID + " INTEGER UNIQUE NOT NULL, " +
+				ReviewsEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
 				ReviewsEntry.COLUMN_AUTHOR + " TEXT NOT NULL, " +
 				ReviewsEntry.COLUMN_CONTENT + " TEXT NOT NULL, " +
 				ReviewsEntry.COLUMN_URL + " TEXT NOT NULL, " +

@@ -24,11 +24,10 @@ public class MovieDetailActivity extends ActionBarActivity {
 						new MovieDetailActivityFragment()).commit();
 			}
 			final Fragment reviewsFragment = getSupportFragmentManager().findFragmentById(R.id.movie_reviews_fragment);
-			if (reviewsFragment == null || !(reviewsFragment instanceof MoviesGridFragment)) {
+			if (reviewsFragment == null || !(reviewsFragment instanceof MovieReviewsFragment)) {
 				getSupportFragmentManager().beginTransaction().add(R.id.movie_reviews_fragment,
-						new MoviesGridFragment()).commit();
+						new MovieReviewsFragment()).commit();
 			}
-
 		}
 	}
 

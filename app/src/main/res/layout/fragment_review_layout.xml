@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-    android:id="@+id/reviewsLayout"
     android:name="com.example.popularmovies.MovieReviewsFragment"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     android:orientation="vertical"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.example.popularmovies.MovieReviewsFragment"/>
+    tools:context="com.example.popularmovies.MovieReviewsFragment">
+
+    <TextView
+        android:id="@+id/subtitleView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/text_margin"
+        android:layout_marginTop="@dimen/text_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textStyle="bold"/>
+
+    <LinearLayout
+        android:id="@+id/reviewsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"/>
+
+</LinearLayout>

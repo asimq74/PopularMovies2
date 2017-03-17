@@ -5,6 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_movie_detail">Movie Detail</string>
     <string name="rating_label">Rating:</string>
+    <string name="reviews">Reviews</string>
     <string name="release_date_label">Release Date:</string>
     <string name="failed_to_insert_or_replace">Failed to insert or replace row into %s</string>
     <string name="unknown_uri">Unknown uri: %s</string>
@@ -12,4 +13,6 @@
     <string name="top_rated">top_rated</string>
     <string name="mark_as_favorite">mark as favorite</string>
     <string name="favorite">favorite</string>
+    <string name="view_more">View More... </string>
+    <string name="view_less">View Less...</string>
 </resources>

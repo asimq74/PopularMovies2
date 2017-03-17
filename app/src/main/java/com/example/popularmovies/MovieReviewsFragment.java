@@ -1,5 +1,6 @@
 package com.example.popularmovies;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,13 +12,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.example.popularmovies.ReviewsAdapter.ViewHolder;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 
 /**
@@ -26,9 +25,24 @@ import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
  */
 public class MovieReviewsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+	public class ViewHolder extends RecyclerView.ViewHolder {
+
+		public final TextView authorView;
+		public final TextView contentView;
+		public final TextView urlView;
+
+		public ViewHolder(View view) {
+			super(view);
+			authorView = (TextView) view.findViewById(R.id.author);
+			contentView = (TextView) view.findViewById(R.id.content);
+			urlView = (TextView) view.findViewById(R.id.url);
+		}
+
+	}
 	private static final int REVIEWS_LOADER = 0;
 	final String TAG = this.getClass().getSimpleName();
 	private Uri mUri;
+	private TextView titleView;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -59,26 +73,16 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 				null);
 	}
 
+	private LinearLayout reviewsLayout;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_review_layout, container, false);
+		reviewsLayout = (LinearLayout) view.findViewById(R.id.reviewsLayout);
+		titleView = (TextView) view.findViewById(R.id.subtitleView);
+		titleView.setText(R.string.reviews);
 		return view;
-	}
-
-	public class ViewHolder extends RecyclerView.ViewHolder {
-
-		public final TextView authorView;
-		public final TextView contentView;
-		public final TextView urlView;
-
-		public ViewHolder(View view) {
-			super(view);
-			authorView = (TextView) view.findViewById(R.id.author);
-			contentView = (TextView) view.findViewById(R.id.content);
-			urlView = (TextView) view.findViewById(R.id.url);
-		}
-
 	}
 
 	@Override
@@ -86,25 +90,34 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 		TextView authorView;
 		TextView contentView;
 		TextView urlView;
-		data.moveToFirst();
-		final LinearLayout reviewsLayout = (LinearLayout) getView();
 		reviewsLayout.removeAllViews();
 		if (data == null && !data.moveToFirst()) {
 			return;
 		}
 		Log.d(TAG, String.format("review count: %s for movie_id: %s", data.getCount(), mUri.getLastPathSegment()));
-		if (data.moveToFirst()) {
-			do {
-				View reviewDataView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_review, reviewsLayout, false);
-				authorView = (TextView) reviewDataView.findViewById(R.id.author);
-				contentView = (TextView) reviewDataView.findViewById(R.id.content);
-				urlView = (TextView) reviewDataView.findViewById(R.id.url);
-				Log.i(TAG, String.format("content %s", data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_CONTENT))));
-				contentView.setText(data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_CONTENT)));
-				authorView.setText(data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_AUTHOR)));
-				urlView.setText(data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_URL)));
-				reviewsLayout.addView(reviewDataView);
-			} while (data.moveToNext());
+		if (data.getCount() < 1) {
+			titleView.setVisibility(View.GONE);
+			return;
+		}
+		data.moveToFirst();
+		while (!data.isAfterLast()) {
+			View reviewDataView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_review, reviewsLayout, false);
+			authorView = (TextView) reviewDataView.findViewById(R.id.author);
+			contentView = (TextView) reviewDataView.findViewById(R.id.content);
+			urlView = (TextView) reviewDataView.findViewById(R.id.url);
+			final String content = data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_CONTENT));
+			contentView.setText(content.length() <= 100 ? content : String.format("%s...", content.substring(0, 100)));
+			authorView.setText(data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_AUTHOR)));
+			final String urlString = data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_URL));
+			urlView.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlString));
+					startActivity(browserIntent);
+				}
+			});
+			reviewsLayout.addView(reviewDataView);
+			data.moveToNext();
 		}
 		data.close();
 	}

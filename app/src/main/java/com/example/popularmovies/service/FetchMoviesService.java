@@ -25,8 +25,10 @@ public class FetchMoviesService extends IntentService {
         RetrieveMovieInfoApi<MovieInfo, List<String>> retrieveMoviesHandler = new MovieInfoRetriever(getApplicationContext());
         List<String> movieIds = retrieveMoviesHandler.retrieveMovieInformation(criteria);
         MovieReviewsRetriever reviewsHandler = new MovieReviewsRetriever(getApplicationContext());
+        MovieVideosRetriever videosHandler = new MovieVideosRetriever(getApplicationContext());
         for (String movieId : movieIds) {
             List<String> reviewIds = reviewsHandler.retrieveMovieInformation(movieId);
+            List<String> videoIds = videosHandler.retrieveMovieInformation(movieId);
         }
     }
 
