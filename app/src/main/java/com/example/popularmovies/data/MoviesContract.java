@@ -29,15 +29,17 @@ public class MoviesContract {
 	/* Inner class that defines the table contents of the favorites table */
 	public static final class FavoritesEntry implements BaseColumns {
 
-		public static final String CONTENT_ITEM_TYPE =
-				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
-		public static final String CONTENT_TYPE =
+		static final String CONTENT_TYPE =
 				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
-		public static final Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES);
-		public static final Uri CONTENT_URI =
+		static final Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES);
+		static final Uri CONTENT_URI =
 				CONTENT_URI_BUILDER.build();
 		// Table name
 		public static final String TABLE_NAME = "favorites";
+
+		public static Uri buildFavoritesById(long movieId) {
+			return ContentUris.withAppendedId(CONTENT_URI, movieId);
+		}
 
 		private static Builder buildUriWithFixedPath(String[] path) {
 			Builder contentUriBuilder = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES);
@@ -45,10 +47,6 @@ public class MoviesContract {
 				contentUriBuilder.appendPath(pathItem);
 			}
 			return contentUriBuilder;
-		}
-
-		public static Uri buildFavoritesById(long movieId) {
-			return ContentUris.withAppendedId(CONTENT_URI, movieId);
 		}
 
 		public static Uri removeFavoriteById(long movieId) {
@@ -72,11 +70,11 @@ public class MoviesContract {
 		public static final String COLUMN_VIDEO = "video";
 		public static final String COLUMN_VOTE_AVERAGE = "vote_average";
 		public static final String COLUMN_VOTE_COUNT = "vote_count";
-		public static final String CONTENT_ITEM_TYPE =
+		static final String CONTENT_ITEM_TYPE =
 				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
-		public static final String CONTENT_TYPE =
+		static final String CONTENT_TYPE =
 				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
-		public static final Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES);
+		static final Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES);
 		public static final Uri CONTENT_URI =
 				CONTENT_URI_BUILDER.build();
 		public static final String TABLE_NAME = "movies";
@@ -111,9 +109,7 @@ public class MoviesContract {
 		public static final String COLUMN_MOVIE_ID = "movie_id";
 		public static final String COLUMN_URL = "url";
 
-		public static final String CONTENT_ITEM_TYPE =
-				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REVIEWS;
-		public static final String CONTENT_TYPE =
+		static final String CONTENT_TYPE =
 				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REVIEWS;
 		public static final Uri CONTENT_URI =
 				BASE_CONTENT_URI.buildUpon().appendPath(PATH_REVIEWS).build();
@@ -135,9 +131,7 @@ public class MoviesContract {
 		public static final String COLUMN_SIZE = "size";
 		public static final String COLUMN_TYPE = "type";
 
-		public static final String CONTENT_ITEM_TYPE =
-				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_VIDEOS;
-		public static final String CONTENT_TYPE =
+		static final String CONTENT_TYPE =
 				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_VIDEOS;
 		public static final Uri CONTENT_URI =
 				BASE_CONTENT_URI.buildUpon().appendPath(PATH_VIDEOS).build();
@@ -149,28 +143,32 @@ public class MoviesContract {
 		}
 	}
 
+	// Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
+	// the content provider.
+	private static final Uri BASE_CONTENT_URI;
 	// The "Content authority" is a name for the entire content provider, similar to the
 	// relationship between a domain name and its website.  A convenient string to use for the
 	// content authority is the package name for the app, which is guaranteed to be unique on the
 	// device.
-	public static final String CONTENT_AUTHORITY = "com.example.popularmovies";
-	// Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
-	// the content provider.
-	public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+	static final String CONTENT_AUTHORITY = "com.example.popularmovies";
+	public static final String FAVORITES = "favorites";
 	// Possible paths (appended to base content URI for possible URI's)
 	// For instance, content://com.example.android.sunshine.app/weather/ is a valid path for
 	// looking at weather data. content://com.example.android.sunshine.app/givemeroot/ will fail,
 	// as the ContentProvider hasn't been given any information on what to do with "givemeroot".
 	// At least, let's hope not.  Don't be that dev, reader.  Don't be that dev.
-	public static final String PATH_FAVORITES = "favorites";
-	public static final String PATH_HIGHEST_RATED = "highest_rated";
-	public static final String PATH_MOST_POPULAR = "most_popular";
-	public static final String PATH_MOVIES = "movies";
-	public static final String PATH_REVIEWS = "reviews";
-	public static final String PATH_VIDEOS = "videos";
+	static final String PATH_FAVORITES = "favorites";
+	static final String PATH_HIGHEST_RATED = "highest_rated";
+	static final String PATH_MOST_POPULAR = "most_popular";
+	static final String PATH_MOVIES = "movies";
+	static final String PATH_REVIEWS = "reviews";
+	static final String PATH_VIDEOS = "videos";
 	public static final String POPULAR = "popular";
-	public static final String REMOVE = "remove";
+	static final String REMOVE = "remove";
 	public static final String TOP_RATED = "top_rated";
-	public static final String FAVORITES = "favorites";
+
+	static {
+		BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+	}
 
 }
