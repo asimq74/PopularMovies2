@@ -1,7 +1,7 @@
 package com.example.popularmovies;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
 
 /**
@@ -28,6 +26,19 @@ import com.example.popularmovies.data.MoviesContract.VideosEntry;
  * <p />
  */
 public class MovieTrailersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+	/**
+	 * A callback interface that all activities containing this fragment must
+	 * implement. This mechanism allows activities to be notified of item
+	 * selections.
+	 */
+	public interface MovieTrailerCallback {
+
+		/**
+		 * DetailFragmentCallback for when an item has been selected.
+		 */
+		String getFirstTrailerUrl();
+	}
 
 	static class ViewHolder {
 
@@ -42,6 +53,13 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 	final String TAG = this.getClass().getSimpleName();
 	private Uri mUri;
 	private TextView titleView;
+	;
+	private LinearLayout videosLayout;
+	private List<String> youTubeUrls = new ArrayList<>();
+
+	public String getFirstTrailerUrl() {
+		return youTubeUrls.isEmpty() ? "" : youTubeUrls.get(0);
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -72,8 +90,6 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 				null);
 	}
 
-	private LinearLayout videosLayout;
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -102,10 +118,12 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 			final String name = data.getString(data.getColumnIndex(VideosEntry.COLUMN_NAME));
 			viewHolder.trailerNameView.setText(name);
 			final String key = data.getString(data.getColumnIndex(VideosEntry.COLUMN_KEY));
+			final String youTubeUrl = String.format("http://www.youtube.com/watch?v=%s", key);
+			youTubeUrls.add(youTubeUrl);
 			trailerDataView.findViewById(R.id.playImage).setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("http://www.youtube.com/watch?v=%s", key))));
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(youTubeUrl)));
 				}
 			});
 			videosLayout.addView(trailerDataView);
