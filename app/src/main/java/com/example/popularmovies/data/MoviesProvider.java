@@ -46,6 +46,8 @@ public class MoviesProvider extends ContentProvider {
 			MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID + " = ?";
 	public static final String reviewsIdSelection =
 			ReviewsEntry.TABLE_NAME + "." + ReviewsEntry.COLUMN_MOVIE_ID + " = ?";
+	public static final String videosIdSelection =
+			VideosEntry.TABLE_NAME + "." + VideosEntry.COLUMN_MOVIE_ID + " = ?";
 	private static final SQLiteQueryBuilder favoritesMovieIdSelectionQueryBuilder;
 	private static final SQLiteQueryBuilder favoritesQueryBuilder;
 	private static final SQLiteQueryBuilder movieReviewsByMovieIdQueryBuilder;
@@ -287,6 +289,17 @@ public class MoviesProvider extends ContentProvider {
 		);
 	}
 
+	private Cursor getVideos(Uri uri) {
+		return trailersQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+				null,
+				videosIdSelection,
+				new String[]{uri.getLastPathSegment()},
+				null,
+				null,
+				null
+		);
+	}
+
 	@Nullable
 	@Override
 	public String getType(Uri uri) {
@@ -294,7 +307,6 @@ public class MoviesProvider extends ContentProvider {
 		final int match = sUriMatcher.match(uri);
 
 		switch (match) {
-			// Student: Uncomment and fill out these two cases
 			case MOVIES:
 				return MoviesEntry.CONTENT_TYPE;
 			case MOVIE_BY_ID:
@@ -408,6 +420,10 @@ public class MoviesProvider extends ContentProvider {
 			}
 			case MOVIE_REVIEWS: {
 				retCursor = getReviews(uri);
+				break;
+			}
+			case MOVIE_TRAILERS: {
+				retCursor = getVideos(uri);
 				break;
 			}
 			case TRAILERS: {

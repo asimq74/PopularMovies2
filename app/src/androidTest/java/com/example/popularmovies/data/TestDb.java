@@ -85,8 +85,7 @@ public class TestDb extends AndroidTestCase {
 		TestUtilities.validateCurrentRecord(String.format("Error: %s Query Validation Failed", tableName),
 				cursor, testValues);
 
-		validateCurrentRecord(
-				cursor, testValues);
+		validateCurrentRecord(cursor, testValues);
 
 		// Move the cursor to demonstrate that there is only one record in the database
 		assertFalse(String.format("Error: More than one record returned from %s query", tableName),
@@ -233,13 +232,12 @@ public class TestDb extends AndroidTestCase {
 	}
 
 	public void testReviewsTables() {
-		for (ContentValues contentValues : TestUtilities.createMultipleReviewTestValues()) {
-			insertRow(ReviewsEntry.TABLE_NAME, contentValues);
-		}
+		insertRow(ReviewsEntry.TABLE_NAME, TestUtilities.createReviewTestValues());
 	}
 
 	public void testVideosTable() {
 		insertRow(VideosEntry.TABLE_NAME, TestUtilities.createVideoTestValues());
+		insertRow(VideosEntry.TABLE_NAME, TestUtilities.createVideoTestValues2());
 	}
 
 	public void testFavoritesTable() {

@@ -23,6 +23,7 @@ import com.example.popularmovies.data.MoviesContract;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesProvider;
 import com.example.popularmovies.service.FetchMoviesService;
+import com.example.popularmovies.sync.MoviesSyncAdapter;
 
 /**
  * A fragment representing a list of Movie Items.
@@ -120,12 +121,10 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-		// This is called when a new Loader needs to be created.  This
-		// fragment only uses one loader, so we don't care about checking the id.
-		Uri uri = Utility.getPreferredCriteria(getActivity()).equals(MoviesContract.TOP_RATED) ? MoviesEntry.buildHighestRatedMovies() : MoviesEntry.buildMostPopularMovies();
-		Log.i(getClass().getSimpleName(), String.format("preferred criteria: %s", uri.toString()));
+		final Uri movieInfoUri = Utility.getMovieInfoUri(getActivity());
+		Log.i(getClass().getSimpleName(), String.format("preferred criteria: %s", movieInfoUri.toString()));
 		return new CursorLoader(getActivity(),
-				uri,
+				movieInfoUri,
 				MOVIE_COLUMNS,
 				MoviesProvider.moviesSearchCriteriaSelection,
 				new String[]{Utility.getPreferredCriteria(getActivity())},
@@ -207,9 +206,10 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 	}
 
 	protected void updateMovies() {
-		String criteria = Utility.getPreferredCriteria(getActivity());
-		Intent intent = new Intent(getActivity(), FetchMoviesService.class);
-		intent.putExtra(FetchMoviesService.SEARCH_CRITERIA_EXTRA, criteria);
-		getActivity().startService(intent);
+//		String criteria = Utility.getPreferredCriteria(getActivity());
+//		Intent intent = new Intent(getActivity(), FetchMoviesService.class);
+//		intent.putExtra(FetchMoviesService.SEARCH_CRITERIA_EXTRA, criteria);
+//		getActivity().startService(intent);
+		MoviesSyncAdapter.syncImmediately(getActivity());
 	}
 }

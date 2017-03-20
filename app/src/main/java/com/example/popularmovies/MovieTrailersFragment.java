@@ -1,5 +1,8 @@
 package com.example.popularmovies;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -26,12 +29,11 @@ import com.example.popularmovies.data.MoviesContract.VideosEntry;
  */
 public class MovieTrailersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
+	static class ViewHolder {
 
 		public final TextView trailerNameView;
 
 		public ViewHolder(View view) {
-			super(view);
 			trailerNameView = (TextView) view.findViewById(R.id.trailerName);
 		}
 
@@ -84,7 +86,6 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		TextView trailerNameView;
 		videosLayout.removeAllViews();
 		if (data == null && !data.moveToFirst()) {
 			return;
@@ -94,14 +95,20 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 			titleView.setVisibility(View.GONE);
 			return;
 		}
-		data.moveToFirst();
-		while (!data.isAfterLast()) {
+		while (data.moveToNext()) {
 			View trailerDataView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_trailer, videosLayout, false);
-			trailerNameView = (TextView) trailerDataView.findViewById(R.id.trailerName);
+			ViewHolder viewHolder = new ViewHolder(trailerDataView);
+			trailerDataView.setTag(viewHolder);
 			final String name = data.getString(data.getColumnIndex(VideosEntry.COLUMN_NAME));
-			trailerNameView.setText(name);
+			viewHolder.trailerNameView.setText(name);
+			final String key = data.getString(data.getColumnIndex(VideosEntry.COLUMN_KEY));
+			trailerDataView.findViewById(R.id.playImage).setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(String.format("http://www.youtube.com/watch?v=%s", key))));
+				}
+			});
 			videosLayout.addView(trailerDataView);
-			data.moveToNext();
 		}
 		data.close();
 	}

@@ -207,6 +207,23 @@ public class TestUtilities extends AndroidTestCase {
 		return videoValues;
 	}
 
+	public static ContentValues createVideoTestValues2() {
+		ContentValues videoValues = new ContentValues();
+		videoValues.put(VideosEntry._ID, "56e8c5ac9251417bc3001419");
+		videoValues.put(VideosEntry.COLUMN_MOVIE_ID, TEST_ID);
+		videoValues.put(VideosEntry.COLUMN_NAME, "Official Trailer");
+		videoValues.put(VideosEntry.COLUMN_KEY, "tV_IhWE4LP0");
+		videoValues.put(VideosEntry.COLUMN_SITE, "YouTube");
+		videoValues.put(VideosEntry.COLUMN_SIZE, 1080);
+		videoValues.put(VideosEntry.COLUMN_TYPE, "Trailer");
+		return videoValues;
+	}
+
+//	{"id":283366,"results":[
+//		{"id":"56e8c5ac9251417bc3001419","iso_639_1":"en","iso_3166_1":"US","key":"tV_IhWE4LP0","name":"Official Trailer","site":"YouTube","size":1080,"type":"Trailer"},
+//		{"id":"57992f3292514124c700302d","iso_639_1":"en","iso_3166_1":"US","key":"TkTa-fk3oTk","name":"Inside Tim Burton's Miss Peregrine's Home For Peculiar Children","site":"YouTube","size":1080,"type":"Featurette"},
+//		{"id":"57d95c63c3a3685342005eb4","iso_639_1":"en","iso_3166_1":"US","key":"DN1uhnnKscY","name":"Official Trailer 2","site":"YouTube","size":1080,"type":"Trailer"}]}
+
 	public static ContentValues createFavoritesTestValues() {
 		ContentValues favoriteValues = new ContentValues();
 		favoriteValues.put(FavoritesEntry._ID, "57992d84c3a3687e5c003a3b");

@@ -12,6 +12,7 @@ import java.util.Vector;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;

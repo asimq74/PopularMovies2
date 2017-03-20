@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,23 +24,24 @@ import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
  */
 public class MovieReviewsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-	public class ViewHolder extends RecyclerView.ViewHolder {
+	public static class ViewHolder {
 
-		public final TextView authorView;
-		public final TextView contentView;
-		public final TextView urlView;
+		final TextView authorView;
+		final TextView contentView;
+		final TextView urlView;
 
-		public ViewHolder(View view) {
-			super(view);
+		ViewHolder(View view) {
 			authorView = (TextView) view.findViewById(R.id.author);
 			contentView = (TextView) view.findViewById(R.id.content);
 			urlView = (TextView) view.findViewById(R.id.url);
 		}
 
 	}
+
 	private static final int REVIEWS_LOADER = 0;
 	final String TAG = this.getClass().getSimpleName();
 	private Uri mUri;
+	private LinearLayout reviewsLayout;
 	private TextView titleView;
 
 	@Override
@@ -73,8 +73,6 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 				null);
 	}
 
-	private LinearLayout reviewsLayout;
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -87,9 +85,6 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-		TextView authorView;
-		TextView contentView;
-		TextView urlView;
 		reviewsLayout.removeAllViews();
 		if (data == null && !data.moveToFirst()) {
 			return;
@@ -99,17 +94,15 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 			titleView.setVisibility(View.GONE);
 			return;
 		}
-		data.moveToFirst();
-		while (!data.isAfterLast()) {
+		while (data.moveToNext()) {
 			View reviewDataView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_review, reviewsLayout, false);
-			authorView = (TextView) reviewDataView.findViewById(R.id.author);
-			contentView = (TextView) reviewDataView.findViewById(R.id.content);
-			urlView = (TextView) reviewDataView.findViewById(R.id.url);
+			ViewHolder viewHolder = new ViewHolder(reviewDataView);
+			reviewDataView.setTag(viewHolder);
 			final String content = data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_CONTENT));
-			contentView.setText(content.length() <= 100 ? content : String.format("%s...", content.substring(0, 100)));
-			authorView.setText(data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_AUTHOR)));
+			viewHolder.contentView.setText(content.length() <= 100 ? content : String.format("%s...", content.substring(0, 100)));
+			viewHolder.authorView.setText(data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_AUTHOR)));
 			final String urlString = data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_URL));
-			urlView.setOnClickListener(new OnClickListener() {
+			viewHolder.urlView.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlString));
@@ -117,7 +110,7 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 				}
 			});
 			reviewsLayout.addView(reviewDataView);
-			data.moveToNext();
+
 		}
 		data.close();
 	}

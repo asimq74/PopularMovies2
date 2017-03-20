@@ -152,7 +152,6 @@ public class MovieInfoRetriever implements RetrieveMovieInfoApi<MovieInfo, List<
                 movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_AVERAGE, movieInfo.getVoteAverage());
                 movieValues.put(MoviesContract.MoviesEntry.COLUMN_VOTE_COUNT, movieInfo.getVoteCount());
                 movieValues.put(MoviesContract.MoviesEntry.COLUMN_SEARCH_CRITERIA, criteria);
-
                 cVVector.add(movieValues);
             }
 

@@ -1,6 +1,5 @@
 <resources xmlns:xliff="http://schemas.android.com/apk/res-auto">
     <string name="app_name">Popular Movies</string>
-    <string name="content_authority">com.example.popularmovies</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_movie_detail">Movie Detail</string>
@@ -16,4 +15,7 @@
     <string name="favorite">favorite</string>
     <string name="view_more">View More... </string>
     <string name="view_less">View Less...</string>
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">popularmovies.example.com</string>
+    <string name="content_authority">com.example.popularmovies</string>
 </resources>

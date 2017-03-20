@@ -171,5 +171,6 @@ public class MoviesContract {
 	public static final String POPULAR = "popular";
 	public static final String REMOVE = "remove";
 	public static final String TOP_RATED = "top_rated";
+	public static final String FAVORITES = "favorites";
 
 }

@@ -1,18 +1,16 @@
 package com.example.popularmovies;
 
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.UUID;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
+import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.example.popularmovies.data.MoviesContract;
 import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
+import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 
 /**
  * Created by U1C306 on 2/22/2017.
@@ -22,28 +20,28 @@ public class Utility {
 
 	private static final String TAG = Utility.class.getSimpleName();
 
-	static void validateCursor(Cursor valueCursor, ContentValues expectedValues) {
-		valueCursor.moveToFirst();
-		validateCurrentRecord(valueCursor, expectedValues);
-		valueCursor.close();
-	}
-
-	static void validateCurrentRecord(Cursor valueCursor, ContentValues expectedValues) {
-		Set<Entry<String, Object>> valueSet = expectedValues.valueSet();
-		for (Map.Entry<String, Object> entry : valueSet) {
-			String columnName = entry.getKey();
-			int idx = valueCursor.getColumnIndex(columnName);
-			Log.i(TAG, String.format("%s = %s", columnName, valueCursor.getString(idx)));
-		}
-	}
-
 	public static ContentValues createFavoritesValues(String movieId) {
 		ContentValues favoriteValues = new ContentValues();
 		favoriteValues.put(FavoritesEntry._ID, movieId);
 		return favoriteValues;
 	}
 
-	static String getPreferredCriteria(Context context) {
+	@NonNull
+	public static Uri getMovieInfoUri(@NonNull String criteria) {
+		if (criteria.equals(MoviesContract.TOP_RATED)) {
+			return MoviesEntry.buildHighestRatedMovies();
+		} else if (criteria.equals(MoviesContract.POPULAR)) {
+			return MoviesEntry.buildMostPopularMovies();
+		}
+		return MoviesEntry.buildFavoriteMovies();
+	}
+
+	@NonNull
+	public static Uri getMovieInfoUri(@NonNull Context context) {
+		return getMovieInfoUri(getPreferredCriteria(context));
+	}
+
+	public static String getPreferredCriteria(Context context) {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		return prefs.getString(context.getString(R.string.pref_search_criteria_key), context.getString(R.string.pref_search_criteria_default));
 	}
@@ -54,7 +52,7 @@ public class Utility {
 	 *
 	 * @return a user-friendly representation of the date.
 	 */
-	static String getYear(String dateString) {
+	public static String getYear(String dateString) {
 		String year = "";
 		try {
 			year = dateString.split("-")[0];

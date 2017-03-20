@@ -22,7 +22,6 @@ import com.example.popularmovies.businessobjects.MovieConstants;
 import com.example.popularmovies.data.MoviesContract;
 import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
-import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -126,35 +125,47 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 			releaseDateView.setText(Utility.getYear(data.getString(COL_RELEASE_DATE)));
 			final String lastPathSegment = mUri.getLastPathSegment();
 			final long movieId = Long.parseLong(lastPathSegment);
+			Cursor isFavoriteCursor = getContext().getContentResolver().query(FavoritesEntry.buildFavoritesById(movieId), null, null, null, null);
+			if (isFavoriteCursor != null && isFavoriteCursor.moveToFirst()) {
+				setButtonToFavorite(markAsFavoriteButton);
+			} else {
+				setButtonToMarkAsFavorite(markAsFavoriteButton);
+			}
 			markAsFavoriteButton.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View view) {
 					Button button = (Button) view;
 					final ContentValues favoritesValues = Utility.createFavoritesValues(lastPathSegment);
 					if (button.getText().equals(getString(R.string.mark_as_favorite))) {
-						view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorSkyBlue));
-						button.setText(getString(R.string.favorite));
+						setButtonToFavorite(button);
 						Uri returnUri = getContext().getContentResolver().insert(FavoritesEntry.buildFavoritesById(movieId), favoritesValues);
 						Log.d(TAG, String.format("Insert into favorites Complete. %s %s", favoritesValues, returnUri));
 					} else {
-						view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.colorMovieDetailHeader));
-						button.setText(getString(R.string.mark_as_favorite));
+						setButtonToMarkAsFavorite(button);
 						int rowsDeleted = getContext().getContentResolver().delete(FavoritesEntry.removeFavoriteById(movieId), null, null);
 						Log.d(TAG, "deleted " + rowsDeleted + " row from " + FavoritesEntry.removeFavoriteById(movieId));
 					}
 				}
 			});
-			Cursor cursor = getContext().getContentResolver().query(MoviesContract.ReviewsEntry.buildReviewsById(movieId), null, null, null, null);
-			Log.d(TAG, String.format("review count: %s for movie_id: %s", cursor.getCount(), lastPathSegment));
-			while (cursor.moveToNext()) {
-				Log.d(TAG, String.format("review content: %s", cursor.getString(cursor.getColumnIndex(ReviewsEntry.COLUMN_CONTENT))));
-			}
 		}
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 
+	}
+
+	private void setButtonToFavorite(Button button) {
+		updateButton(button, R.color.colorSkyBlue, R.string.favorite);
+	}
+
+	private void setButtonToMarkAsFavorite(Button button) {
+		updateButton(button, R.color.colorMovieDetailHeader, R.string.mark_as_favorite);
+	}
+
+	private void updateButton(Button button, int color, int buttonText) {
+		button.setBackgroundColor(ContextCompat.getColor(getActivity(), color));
+		button.setText(getString(buttonText));
 	}
 
 }
