@@ -1,6 +1,5 @@
 package com.example.popularmovies;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,11 +17,9 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ListView;
 
-import com.example.popularmovies.businessobjects.MovieConstants;
 import com.example.popularmovies.data.MoviesContract;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
 import com.example.popularmovies.data.MoviesProvider;
-import com.example.popularmovies.service.FetchMoviesService;
 import com.example.popularmovies.sync.MoviesSyncAdapter;
 
 /**
@@ -33,7 +30,7 @@ import com.example.popularmovies.sync.MoviesSyncAdapter;
  * <p/>
  * Created by Asim Qureshi.
  */
-public class MoviesGridFragment extends Fragment implements MovieConstants, LoaderManager.LoaderCallbacks<Cursor> {
+public class MoviesGridFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
 	/**
 	 * A callback interface that all activities containing this fragment must
@@ -45,31 +42,12 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 		/**
 		 * DetailFragmentCallback for when an item has been selected.
 		 */
-		public void onItemSelected(Uri detailUri);
+		void onItemSelected(Uri detailUri);
 	}
 
-	static final int COL_ADULT = 1;
-	static final int COL_BACKDROP_PATH = 8;
-	static final int COL_FAVORITE = 12;
-	// These indices are tied to MOVIE_COLUMNS.  If MOVIE_COLUMNS changes, these must change.
 	static final int COL_MOVIE_ID = 0;
-	static final int COL_ORIGINAL_LANGUAGE = 6;
-	static final int COL_ORIGINAL_TITLE = 5;
-	static final int COL_OVERVIEW = 3;
-	static final int COL_POPULARITY = 9;
 	static final int COL_POSTER_PATH = 2;
-	static final int COL_RELEASE_DATE = 4;
-	static final int COL_TITLE = 7;
-	static final int COL_VIDEO = 13;
-	static final int COL_VOTE_AVERAGE = 11;
-	static final int COL_VOTE_COUNT = 10;
 	private static final String[] MOVIE_COLUMNS = {
-			// In this case the id needs to be fully qualified with a table name, since
-			// the content provider joins the location & weather tables in the background
-			// (both have an _id column)
-			// On the one hand, that's annoying.  On the other, you can search the weather table
-			// using the location set by the user, which is only in the Location table.
-			// So the convenience is worth it.
 			MoviesContract.MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID,
 			MoviesContract.MoviesEntry.COLUMN_ADULT,
 			MoviesContract.MoviesEntry.COLUMN_POSTER_PATH,
@@ -87,10 +65,6 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 	};
 	private static final int MOVIE_LOADER = 0;
 	private static final String SELECTED_KEY = "selected_position";
-
-	public static MoviesGridFragment newInstance() {
-		return new MoviesGridFragment();
-	}
 
 	private GridView gridView;
 	private int mPosition = GridView.INVALID_POSITION;
@@ -133,7 +107,9 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_main, menu);
+		if (Utility.isNetworkAvailable(getActivity())) {
+			inflater.inflate(R.menu.menu_main, menu);
+		}
 	}
 
 	@Override
@@ -206,10 +182,6 @@ public class MoviesGridFragment extends Fragment implements MovieConstants, Load
 	}
 
 	protected void updateMovies() {
-//		String criteria = Utility.getPreferredCriteria(getActivity());
-//		Intent intent = new Intent(getActivity(), FetchMoviesService.class);
-//		intent.putExtra(FetchMoviesService.SEARCH_CRITERIA_EXTRA, criteria);
-//		getActivity().startService(intent);
 		MoviesSyncAdapter.syncImmediately(getActivity());
 	}
 }

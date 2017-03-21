@@ -22,9 +22,9 @@ import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
  * A fragment representing a list of Items.
  * <p />
  */
-public class MovieReviewsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MovieReviewsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, MoviesConstants {
 
-	public static class ViewHolder {
+	static class ViewHolder {
 
 		final TextView authorView;
 		final TextView contentView;
@@ -46,7 +46,13 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		getLoaderManager().initLoader(REVIEWS_LOADER, null, this);
+		if (savedInstanceState != null) {
+			mUri = Uri.parse(savedInstanceState.getString(URI_STRING));
+			getLoaderManager().restartLoader(REVIEWS_LOADER, null, this);
+		} else {
+			mUri = getActivity().getIntent().getData();
+			getLoaderManager().initLoader(REVIEWS_LOADER, null, this);
+		}
 		super.onActivityCreated(savedInstanceState);
 	}
 
@@ -99,7 +105,7 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 			ViewHolder viewHolder = new ViewHolder(reviewDataView);
 			reviewDataView.setTag(viewHolder);
 			final String content = data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_CONTENT));
-			viewHolder.contentView.setText(content.length() <= 100 ? content : String.format("%s...", content.substring(0, 100)));
+			viewHolder.contentView.setText(content.length() <= MAXIMUM_REVIEW_CONTENT_LENGTH ? content : String.format("%s...", content.substring(0, MAXIMUM_REVIEW_CONTENT_LENGTH)));
 			viewHolder.authorView.setText(data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_AUTHOR)));
 			final String urlString = data.getString(data.getColumnIndex(ReviewsEntry.COLUMN_URL));
 			viewHolder.urlView.setOnClickListener(new OnClickListener() {
@@ -117,6 +123,12 @@ public class MovieReviewsFragment extends Fragment implements LoaderManager.Load
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString(URI_STRING, mUri.toString());
 	}
 
 }

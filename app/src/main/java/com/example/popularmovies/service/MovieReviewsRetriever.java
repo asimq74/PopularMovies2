@@ -17,9 +17,7 @@ import android.net.Uri.Builder;
 import android.util.Log;
 
 import com.example.popularmovies.BuildConfig;
-import com.example.popularmovies.businessobjects.MovieInfo;
 import com.example.popularmovies.businessobjects.Review;
-import com.example.popularmovies.data.MoviesContract;
 import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 
 import org.json.JSONArray;
@@ -27,13 +25,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by U1C306 on 3/15/2017.
+ * Implementation of RetrieveMovieInfoApi that retrieves and populates movie reviews for a specific movie
+ *
+ * @author Asim Qureshi
+ *
  */
-
 public class MovieReviewsRetriever implements RetrieveMovieInfoApi<Review, List<String>> {
 
+	private final String TAG = this.getClass().getSimpleName();
 	private final Context context;
-	final String TAG = this.getClass().getSimpleName();
 
 	public MovieReviewsRetriever(Context context) {
 		this.context = context;
@@ -80,7 +80,6 @@ public class MovieReviewsRetriever implements RetrieveMovieInfoApi<Review, List<
 
 	@Override
 	public List<String> retrieveMovieInformation(String criteria) {
-		List<Review> reviews = new ArrayList<>();
 		HttpURLConnection urlConnection = null;
 		BufferedReader reader = null;
 		String reviewsJsonString;
@@ -109,7 +108,7 @@ public class MovieReviewsRetriever implements RetrieveMovieInfoApi<Review, List<
 			}
 			reviewsJsonString = buffer.toString();
 			Log.i(TAG, String.format("reviewsJsonString: %s", reviewsJsonString));
-			reviews = formatJson(reviewsJsonString);
+			List<Review> reviews = formatJson(reviewsJsonString);
 			Vector<ContentValues> cVVector = new Vector<>(reviews.size());
 			for (Review review : reviews) {
 				ContentValues reviewValues = new ContentValues();

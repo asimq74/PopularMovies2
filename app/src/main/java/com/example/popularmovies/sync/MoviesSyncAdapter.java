@@ -31,7 +31,7 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 	 * @param context The context used to access the account service
 	 * @return a fake account.
 	 */
-	public static Account getSyncAccount(Context context) {
+	private static Account getSyncAccount(Context context) {
 		// Get an instance of the Android account manager
 		AccountManager accountManager =
 				(AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
@@ -50,8 +50,8 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 			if (!accountManager.addAccountExplicitly(newAccount, "", null)) {
 				return null;
 			}
-            /*
-             * If you don't set android:syncable="true" in
+						/*
+						 * If you don't set android:syncable="true" in
              * in your <provider> element in the manifest,
              * then call ContentResolver.setIsSyncable(account, AUTHORITY, 1)
              * here.
@@ -72,15 +72,16 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 		ContentResolver.requestSync(getSyncAccount(context),
 				context.getString(R.string.content_authority), bundle);
 	}
-	public final String LOG_TAG = MoviesSyncAdapter.class.getSimpleName();
 
-	public MoviesSyncAdapter(Context context, boolean autoInitialize) {
+	private final String TAG = MoviesSyncAdapter.class.getSimpleName();
+
+	MoviesSyncAdapter(Context context, boolean autoInitialize) {
 		super(context, autoInitialize);
 	}
 
 	@Override
 	public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider, SyncResult syncResult) {
-		Log.d(LOG_TAG, "Starting sync");
+		Log.d(TAG, "Starting sync");
 		String criteria = Utility.getPreferredCriteria(getContext());
 		if (MoviesContract.FAVORITES.equals(criteria)) {
 			return;
@@ -92,6 +93,8 @@ public class MoviesSyncAdapter extends AbstractThreadedSyncAdapter {
 		for (String movieId : movieIds) {
 			List<String> reviewIds = reviewsHandler.retrieveMovieInformation(movieId);
 			List<String> videoIds = videosHandler.retrieveMovieInformation(movieId);
+			Log.d(TAG, String.format("reviewIds: %s", reviewIds));
+			Log.d(TAG, String.format("videoIds: %s", videoIds));
 		}
 	}
 }

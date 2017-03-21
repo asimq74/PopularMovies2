@@ -237,7 +237,6 @@ public class TestDb extends AndroidTestCase {
 
 	public void testVideosTable() {
 		insertRow(VideosEntry.TABLE_NAME, TestUtilities.createVideoTestValues());
-		insertRow(VideosEntry.TABLE_NAME, TestUtilities.createVideoTestValues2());
 	}
 
 	public void testFavoritesTable() {

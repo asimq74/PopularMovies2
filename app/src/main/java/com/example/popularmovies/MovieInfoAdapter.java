@@ -11,9 +11,10 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 /**
- * Created by U1C306 on 1/13/2017.
+ * Adapter displaying Popular Movies Detail
+ * <p/>
+ * Created by Asim Qureshi.
  */
-
 public class MovieInfoAdapter extends CursorAdapter {
 
 	public static class ViewHolder {

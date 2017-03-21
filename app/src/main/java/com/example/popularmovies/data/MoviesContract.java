@@ -22,19 +22,17 @@ import android.net.Uri.Builder;
 import android.provider.BaseColumns;
 
 /**
- * Defines table and column names for the weather database.
+ * Defines table and column names for the Movies database
  */
 public class MoviesContract {
 
 	/* Inner class that defines the table contents of the favorites table */
 	public static final class FavoritesEntry implements BaseColumns {
 
-		static final String CONTENT_TYPE =
-				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
+		static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITES;
 		static final Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES);
-		static final Uri CONTENT_URI =
-				CONTENT_URI_BUILDER.build();
-		// Table name
+		static final Uri CONTENT_URI = CONTENT_URI_BUILDER.build();
+
 		public static final String TABLE_NAME = "favorites";
 
 		public static Uri buildFavoritesById(long movieId) {
@@ -54,7 +52,7 @@ public class MoviesContract {
 		}
 	}
 
-	/* Inner class that defines the table contents of the weather table */
+	/* Inner class that defines the table contents of the movies table */
 	public static final class MoviesEntry implements BaseColumns {
 
 		public static final String COLUMN_ADULT = "adult";
@@ -70,13 +68,10 @@ public class MoviesContract {
 		public static final String COLUMN_VIDEO = "video";
 		public static final String COLUMN_VOTE_AVERAGE = "vote_average";
 		public static final String COLUMN_VOTE_COUNT = "vote_count";
-		static final String CONTENT_ITEM_TYPE =
-				ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
-		static final String CONTENT_TYPE =
-				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
+		static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
+		static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_MOVIES;
 		static final Builder CONTENT_URI_BUILDER = BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIES);
-		public static final Uri CONTENT_URI =
-				CONTENT_URI_BUILDER.build();
+		public static final Uri CONTENT_URI = CONTENT_URI_BUILDER.build();
 		public static final String TABLE_NAME = "movies";
 
 		public static Uri buildFavoriteMovies() {
@@ -109,11 +104,9 @@ public class MoviesContract {
 		public static final String COLUMN_MOVIE_ID = "movie_id";
 		public static final String COLUMN_URL = "url";
 
-		static final String CONTENT_TYPE =
-				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REVIEWS;
-		public static final Uri CONTENT_URI =
-				BASE_CONTENT_URI.buildUpon().appendPath(PATH_REVIEWS).build();
-		// Table name
+		static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_REVIEWS;
+		public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_REVIEWS).build();
+
 		public static final String TABLE_NAME = "reviews";
 
 		public static Uri buildReviewsById(long movieId) {
@@ -131,11 +124,9 @@ public class MoviesContract {
 		public static final String COLUMN_SIZE = "size";
 		public static final String COLUMN_TYPE = "type";
 
-		static final String CONTENT_TYPE =
-				ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_VIDEOS;
-		public static final Uri CONTENT_URI =
-				BASE_CONTENT_URI.buildUpon().appendPath(PATH_VIDEOS).build();
-		// Table name
+		static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_VIDEOS;
+		public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_VIDEOS).build();
+
 		public static final String TABLE_NAME = "videos";
 
 		public static Uri buildVideosById(long movieId) {

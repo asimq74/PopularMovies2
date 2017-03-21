@@ -25,7 +25,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.popularmovies.MovieTrailersFragment.MovieTrailerCallback;
-import com.example.popularmovies.businessobjects.MovieConstants;
 import com.example.popularmovies.data.MoviesContract;
 import com.example.popularmovies.data.MoviesContract.FavoritesEntry;
 import com.example.popularmovies.data.MoviesContract.MoviesEntry;
@@ -36,31 +35,17 @@ import com.squareup.picasso.Picasso;
  * <p/>
  * Created by Asim Qureshi.
  */
-public class MovieDetailActivityFragment extends Fragment implements MovieConstants, LoaderManager.LoaderCallbacks<Cursor> {
+public class MovieDetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-	public static final int COL_ADULT = 1;
-	public static final int COL_BACKDROP_PATH = 8;
 	// These indices are tied to DETAIL_COLUMNS.  If DETAIL_COLUMNS changes, these
 	// must change.
-	public static final int COL_ID = 0;
-	public static final int COL_ORIGINAL_LANGUAGE = 6;
-	public static final int COL_ORIGINAL_TITLE = 5;
 	public static final int COL_OVERVIEW = 3;
-	public static final int COL_POPULARITY = 9;
 	public static final int COL_POSTER_PATH = 2;
 	public static final int COL_RELEASE_DATE = 4;
 	public static final int COL_TITLE = 7;
-	public static final int COL_VIDEO = 12;
 	public static final int COL_VOTE_AVERAGE = 11;
-	public static final int COL_VOTE_COUNT = 10;
 	private static final int DETAIL_LOADER = 0;
 	private static final String[] MOVIE_COLUMNS = {
-			// In this case the id needs to be fully qualified with a table name, since
-			// the content provider joins the location & weather tables in the background
-			// (both have an _id column)
-			// On the one hand, that's annoying.  On the other, you can search the weather table
-			// using the location set by the user, which is only in the Location table.
-			// So the convenience is worth it.
 			MoviesContract.MoviesEntry.TABLE_NAME + "." + MoviesEntry._ID,
 			MoviesContract.MoviesEntry.COLUMN_ADULT,
 			MoviesContract.MoviesEntry.COLUMN_POSTER_PATH,
@@ -76,6 +61,7 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 			MoviesContract.MoviesEntry.COLUMN_VIDEO
 	};
 	final String TAG = this.getClass().getSimpleName();
+	private ShareActionProvider mShareActionProvider;
 	private Uri mUri;
 	private Button markAsFavoriteButton;
 	private ImageView movieThumbnailView;
@@ -83,6 +69,13 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 	private TextView overviewView;
 	private TextView ratingView;
 	private TextView releaseDateView;
+
+	public Intent createShareFirstTrailerIntent() {
+		Intent shareIntent = new Intent(Intent.ACTION_SEND);
+		shareIntent.setType("text/plain");
+		shareIntent.putExtra(Intent.EXTRA_TEXT, ((MovieTrailerCallback) getActivity()).getFirstTrailerUrl());
+		return shareIntent;
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -102,6 +95,23 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 				null,
 				null,
 				null);
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		inflater.inflate(R.menu.menu_movie_detail, menu);
+
+		// Retrieve the share menu item
+		MenuItem menuItem = menu.findItem(R.id.action_share);
+
+		// Get the provider and hold onto it to set/change the share intent.
+		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+		// If onLoadFinished happens before this, we can go ahead and set the share intent now.
+		if (((MovieTrailerCallback) getActivity()).getFirstTrailerUrl() != null) {
+			mShareActionProvider.setShareIntent(createShareFirstTrailerIntent());
+		}
 	}
 
 	@Override
@@ -160,35 +170,6 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
 			}
 		}
 	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		inflater.inflate(R.menu.menu_movie_detail, menu);
-
-		// Retrieve the share menu item
-		MenuItem menuItem = menu.findItem(R.id.action_share);
-
-		// Get the provider and hold onto it to set/change the share intent.
-		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
-
-		// If onLoadFinished happens before this, we can go ahead and set the share intent now.
-		if (((MovieTrailerCallback)getActivity()).getFirstTrailerUrl() != null) {
-			mShareActionProvider.setShareIntent(createShareFirstTrailerIntent());
-		}
-	}
-
-	private ShareActionProvider mShareActionProvider;
-
-	public Intent createShareFirstTrailerIntent() {
-		Intent shareIntent = new Intent(Intent.ACTION_SEND);
-		shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-		shareIntent.setType("text/plain");
-		shareIntent.putExtra(Intent.EXTRA_TEXT, ((MovieTrailerCallback)getActivity()).getFirstTrailerUrl() + FORECAST_SHARE_HASHTAG);
-		return shareIntent;
-	}
-
-	private static final String FORECAST_SHARE_HASHTAG = " #PopularMoviesApp";
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {

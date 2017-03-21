@@ -12,15 +12,12 @@ import java.util.Vector;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.net.Uri.Builder;
 import android.util.Log;
 
 import com.example.popularmovies.BuildConfig;
 import com.example.popularmovies.businessobjects.Video;
-import com.example.popularmovies.businessobjects.Video;
-import com.example.popularmovies.data.MoviesContract.ReviewsEntry;
 import com.example.popularmovies.data.MoviesContract.VideosEntry;
 
 import org.json.JSONArray;
@@ -28,10 +25,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by U1C306 on 3/17/2017.
+ * Implementation of RetrieveMovieInfoApi that retrieves and populates movie videos for a specific movie
+ *
+ * @author Asim Qureshi
+ *
  */
-
 public class MovieVideosRetriever implements RetrieveMovieInfoApi<Video, List<String>> {
+
+	final String TAG = this.getClass().getSimpleName();
+	private final Context context;
+
+	public MovieVideosRetriever(Context context) {
+		this.context = context;
+	}
 
 	@Override
 	public Builder createUriBuilder(String criteria) {
@@ -44,14 +50,6 @@ public class MovieVideosRetriever implements RetrieveMovieInfoApi<Video, List<St
 				.appendPath("videos")
 				.appendQueryParameter("api_key", BuildConfig.THE_MOVIE_DB_API_KEY);
 		return builder;
-	}
-
-
-	private final Context context;
-	final String TAG = this.getClass().getSimpleName();
-
-	public MovieVideosRetriever(Context context) {
-		this.context = context;
 	}
 
 	@Override
@@ -85,7 +83,6 @@ public class MovieVideosRetriever implements RetrieveMovieInfoApi<Video, List<St
 
 	@Override
 	public List<String> retrieveMovieInformation(String criteria) {
-		List<Video> videos = new ArrayList<>();
 		HttpURLConnection urlConnection = null;
 		BufferedReader reader = null;
 		String videosJsonString;
@@ -114,7 +111,7 @@ public class MovieVideosRetriever implements RetrieveMovieInfoApi<Video, List<St
 			}
 			videosJsonString = buffer.toString();
 			Log.i(TAG, String.format("videosJsonString: %s", videosJsonString));
-			videos = formatJson(videosJsonString);
+			List<Video> videos = formatJson(videosJsonString);
 			Vector<ContentValues> cVVector = new Vector<>(videos.size());
 			for (Video video : videos) {
 				ContentValues videoValues = new ContentValues();

@@ -12,6 +12,8 @@
         android:name="android.permission.WRITE_SYNC_SETTINGS"/>
     <uses-permission
         android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -40,7 +42,6 @@
             android:authorities="@string/content_authority"
             android:exported="false"
             android:syncable="true"/>
-        <service android:name=".service.FetchMoviesService"/>
         <!-- SyncAdapter's dummy authentication service -->
         <service android:name=".sync.MoviesAuthenticatorService">
             <intent-filter>

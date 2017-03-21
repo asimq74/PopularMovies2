@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
@@ -15,7 +16,7 @@ import com.example.popularmovies.data.MoviesContract;
  * <p/>
  * Created by Asim Qureshi.
  */
-public class MainActivity extends ActionBarActivity implements MovieDetailSelectedItemCallback {
+public class MainActivity extends AppCompatActivity implements MovieDetailSelectedItemCallback {
 
 	private String currentMovieSearchCriteria = "";
 
@@ -30,13 +31,6 @@ public class MainActivity extends ActionBarActivity implements MovieDetailSelect
 		Intent intent = new Intent(this, MovieDetailActivity.class).setData(detailUri);
 		startActivity(intent);
 	}
-
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -58,7 +52,7 @@ public class MainActivity extends ActionBarActivity implements MovieDetailSelect
 	@Override
 	protected void onResume() {
 		super.onResume();
-		String newMovieSearchCriteria = Utility.getPreferredCriteria(this);
+		String newMovieSearchCriteria = Utility.isNetworkAvailable(this)? Utility.getPreferredCriteria(this) : MoviesContract.FAVORITES;
 		if (newMovieSearchCriteria != null && (!newMovieSearchCriteria.equals(currentMovieSearchCriteria) || MoviesContract.FAVORITES.equals(newMovieSearchCriteria))) {
 			MoviesGridFragment moviesGridFragment = (MoviesGridFragment) getSupportFragmentManager().findFragmentById(R.id.movies_grid_fragment);
 			if (null != moviesGridFragment) {

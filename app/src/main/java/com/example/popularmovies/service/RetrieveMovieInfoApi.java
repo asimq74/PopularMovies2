@@ -1,20 +1,41 @@
 package com.example.popularmovies.service;
 
+import java.util.List;
+
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 
-import java.util.List;
-
 /**
- * Created by asimqureshi on 3/14/17.
+ * API containing methods associated with retrieving information about movies
+ *
+ * @author Asim Qureshi
+ *
  */
-
 public interface RetrieveMovieInfoApi<I, O> {
 
-    Uri.Builder createUriBuilder(String criteria);
+	/**
+	 * Create a Uri builder for the themoviedb.org API calls
+	 * @param criteria
+	 * @return Uri.Builder
+	 */
+	@NonNull
+	Uri.Builder createUriBuilder(@NonNull String criteria);
 
-    List<I> formatJson(String json) throws JSONException;
+	/**
+	 * format a json string
+	 * @param json
+	 * @return List
+	 */
+	@NonNull
+	List<I> formatJson(@NonNull String json) throws JSONException;
 
-    O retrieveMovieInformation(String criteria);
+	/**
+	 * retrieve movie related information from themoviedb.org API calls
+	 * @param criteria
+	 * @return O
+	 */
+	@NonNull
+	O retrieveMovieInformation(@NonNull String criteria);
 }

@@ -25,7 +25,7 @@ import com.example.popularmovies.data.MoviesContract.VideosEntry;
  * A fragment representing a list of Items.
  * <p />
  */
-public class MovieTrailersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MovieTrailersFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, MoviesConstants {
 
 	/**
 	 * A callback interface that all activities containing this fragment must
@@ -49,11 +49,11 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 		}
 
 	}
+
 	private static final int VIDEOS_LOADER = 0;
 	final String TAG = this.getClass().getSimpleName();
 	private Uri mUri;
 	private TextView titleView;
-	;
 	private LinearLayout videosLayout;
 	private List<String> youTubeUrls = new ArrayList<>();
 
@@ -63,19 +63,18 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		getLoaderManager().initLoader(VIDEOS_LOADER, null, this);
+		if (savedInstanceState != null) {
+			mUri = Uri.parse(savedInstanceState.getString(URI_STRING));
+			getLoaderManager().restartLoader(VIDEOS_LOADER, null, this);
+		} else {
+			mUri = getActivity().getIntent().getData();
+			getLoaderManager().initLoader(VIDEOS_LOADER, null, this);
+		}
 		super.onActivityCreated(savedInstanceState);
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		mUri = getActivity().getIntent().getData();
-	}
-
-	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
 		if (null == mUri) {
 			return null;
 		}
@@ -95,14 +94,19 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_section_layout, container, false);
 		videosLayout = (LinearLayout) view.findViewById(R.id.sectionLayout);
-		titleView = (TextView) view.findViewById(R.id.subtitleView);
-		titleView.setText(R.string.trailers);
+		if (Utility.isNetworkAvailable(getActivity())) {
+			titleView = (TextView) view.findViewById(R.id.subtitleView);
+			titleView.setText(R.string.trailers);
+		}
 		return view;
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		videosLayout.removeAllViews();
+		if (!Utility.isNetworkAvailable(getActivity())) {
+			return;
+		}
 		if (data == null && !data.moveToFirst()) {
 			return;
 		}
@@ -128,11 +132,16 @@ public class MovieTrailersFragment extends Fragment implements LoaderManager.Loa
 			});
 			videosLayout.addView(trailerDataView);
 		}
-		data.close();
 	}
 
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putString(URI_STRING, mUri.toString());
 	}
 
 }
